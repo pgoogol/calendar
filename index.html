@@ -70,7 +70,6 @@
       color: var(--muted); letter-spacing: .04em;
     }
 
-    /* ── Subscribe button → now opens import modal ── */
     .subscribe-btn {
       display: inline-flex; align-items: center; gap: 8px;
       margin-top: 32px; padding: 12px 28px;
@@ -81,17 +80,17 @@
     }
     .subscribe-btn:hover { background: #a93226; transform: translateY(-1px); }
 
-    /* ── Filter rows ── */
+    /* ── Filters ── */
     .filters-wrap {
       max-width: 980px; margin: 0 auto; padding: 32px 20px 0;
     }
     .filter-row {
-      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
       margin-bottom: 10px;
     }
     .filter-label {
       font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--muted); min-width: 64px;
+      color: var(--muted); min-width: 64px; flex-shrink: 0;
     }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -104,57 +103,61 @@
     }
     .pill:hover { border-color: rgba(255,255,255,.3); }
     .pill.active { color: #fff; }
-
-    /* category colours */
+    .pill[data-cat="all"].active      { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); color: var(--cream); }
     .pill[data-cat="salsa"].active    { background: var(--red);    border-color: var(--red); }
     .pill[data-cat="bachata"].active  { background: #1a6b8a;       border-color: #1a6b8a; }
     .pill[data-cat="warsztaty"].active{ background: #2d7a3a;       border-color: #2d7a3a; }
     .pill[data-cat="festiwale"].active{ background: #5b2d8e;       border-color: #5b2d8e; }
-    .pill[data-cat="all"].active      { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); }
+    .pill[data-cat="party"].active    { background: #b5650d;       border-color: #b5650d; }
 
-    /* city pills */
-    .pill[data-city].active { background: #7a5c1e; border-color: var(--gold); color: var(--gold); }
+    /* ── City select dropdown ── */
+    .city-select {
+      appearance: none; -webkit-appearance: none;
+      background: rgba(255,255,255,.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a6f65' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem;
+      padding: 7px 32px 7px 12px;
+      cursor: pointer;
+      transition: border-color .2s;
+      min-width: 160px;
+    }
+    .city-select:hover { border-color: rgba(255,255,255,.28); }
+    .city-select:focus { outline: none; border-color: var(--gold); }
+    .city-select option { background: #1e1a18; color: var(--cream); }
 
     /* ── Events section ── */
     .events-section {
       max-width: 980px; margin: 28px auto 0; padding: 0 20px;
     }
-
     .section-title {
       font-size: .75rem; font-weight: 500; letter-spacing: .14em;
       text-transform: uppercase; color: var(--muted);
       margin-bottom: 16px;
     }
-
     .events-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
       gap: 14px; margin-bottom: 48px; min-height: 80px;
     }
-
     .loading-row {
       display: flex; align-items: center; gap: 10px;
-      color: var(--muted); font-size: .85rem;
-      grid-column: 1 / -1;
+      color: var(--muted); font-size: .85rem; grid-column: 1 / -1;
     }
     .spinner {
       width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,.1);
-      border-top-color: var(--red);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,.1); border-top-color: var(--red);
+      border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .empty-msg { grid-column: 1 / -1; color: var(--muted); font-size: .85rem; }
 
     /* ── Event card ── */
     .event-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px; overflow: hidden;
-      position: relative; cursor: pointer;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden; position: relative; cursor: pointer;
       transition: border-color .2s, transform .2s, box-shadow .2s;
     }
     .event-card::before {
@@ -165,14 +168,14 @@
     .event-card:hover::before { opacity: 1; }
     .event-card.hidden { display: none; }
 
-    .event-card[data-type="salsa"]::before    { background: var(--red); }
-    .event-card[data-type="bachata"]::before  { background: #1a6b8a; }
-    .event-card[data-type="warsztaty"]::before{ background: #2d7a3a; }
-    .event-card[data-type="festiwale"]::before{ background: #5b2d8e; }
+    .event-card[data-primary="salsa"]::before    { background: var(--red); }
+    .event-card[data-primary="bachata"]::before  { background: #1a6b8a; }
+    .event-card[data-primary="warsztaty"]::before{ background: #2d7a3a; }
+    .event-card[data-primary="festiwale"]::before{ background: #5b2d8e; }
+    .event-card[data-primary="party"]::before    { background: #b5650d; }
 
     .card-top {
-      padding: 14px 16px 12px;
-      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 12px; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 12px;
     }
     .card-day-block { min-width: 36px; text-align: center; }
@@ -184,38 +187,36 @@
     .card-divider { width: 1px; height: 28px; background: var(--border); }
     .card-time { font-size: .78rem; font-weight: 500; color: #a09080; }
     .card-dot { margin-left: auto; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .event-card[data-type="salsa"]    .card-dot { background: var(--red);  box-shadow: 0 0 8px rgba(192,57,43,.5); }
-    .event-card[data-type="bachata"]  .card-dot { background: #1a6b8a;     box-shadow: 0 0 8px rgba(26,107,138,.5); }
-    .event-card[data-type="warsztaty"].card-dot { background: #2d7a3a;     box-shadow: 0 0 8px rgba(45,122,58,.5); }
-    .event-card[data-type="festiwale"].card-dot { background: #5b2d8e;     box-shadow: 0 0 8px rgba(91,45,142,.5); }
+    .event-card[data-primary="salsa"]    .card-dot { background: var(--red);  box-shadow: 0 0 8px rgba(192,57,43,.5); }
+    .event-card[data-primary="bachata"]  .card-dot { background: #1a6b8a;     box-shadow: 0 0 8px rgba(26,107,138,.5); }
+    .event-card[data-primary="warsztaty"].card-dot { background: #2d7a3a;     box-shadow: 0 0 8px rgba(45,122,58,.5); }
+    .event-card[data-primary="festiwale"].card-dot { background: #5b2d8e;     box-shadow: 0 0 8px rgba(91,45,142,.5); }
+    .event-card[data-primary="party"]    .card-dot { background: #b5650d;     box-shadow: 0 0 8px rgba(181,101,13,.5); }
 
     .card-body { padding: 14px 16px 16px; }
     .card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1rem; font-weight: 700; line-height: 1.25;
-      color: var(--cream); margin-bottom: 6px;
+      font-size: 1rem; font-weight: 700; line-height: 1.25; color: var(--cream); margin-bottom: 6px;
     }
     .card-location { font-size: .73rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
     .card-city-chip {
-      display: inline-block; margin-top: 8px; margin-right: 4px;
       font-size: .6rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
       padding: 2px 7px; border-radius: 3px;
       background: rgba(232,160,32,.12); color: var(--gold); border: 1px solid rgba(232,160,32,.2);
     }
+    .card-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
     .card-badge {
-      display: inline-block; margin-top: 8px;
-      font-size: .63rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
-      padding: 3px 8px; border-radius: 3px;
+      font-size: .6rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 3px;
     }
-    .event-card[data-type="salsa"]    .card-badge { background: rgba(192,57,43,.18); color: #e07068; }
-    .event-card[data-type="bachata"]  .card-badge { background: rgba(26,107,138,.18); color: #5baec8; }
-    .event-card[data-type="warsztaty"].card-badge { background: rgba(45,122,58,.18);  color: #5cac6a; }
-    .event-card[data-type="festiwale"].card-badge { background: rgba(91,45,142,.18);  color: #b07ac8; }
+    .badge-salsa    { background: rgba(192,57,43,.18); color: #e07068; }
+    .badge-bachata  { background: rgba(26,107,138,.18); color: #5baec8; }
+    .badge-warsztaty{ background: rgba(45,122,58,.18);  color: #5cac6a; }
+    .badge-festiwale{ background: rgba(91,45,142,.18);  color: #b07ac8; }
+    .badge-party    { background: rgba(181,101,13,.18); color: #e09050; }
 
     /* ── Calendar section ── */
-    .calendar-section {
-      max-width: 980px; margin: 0 auto; padding: 0 20px 60px;
-    }
+    .calendar-section { max-width: 980px; margin: 0 auto; padding: 0 20px 60px; }
     .cal-section-header {
       display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
     }
@@ -223,47 +224,54 @@
     .live-badge { display: flex; align-items: center; gap: 6px; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
     .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf6e; box-shadow: 0 0 8px #4caf6e; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
     .calendar-frame {
-      background: #fff;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px; overflow: hidden;
+      background: #fff; border: 1px solid rgba(255,255,255,.08); border-radius: 12px; overflow: hidden;
       box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
     }
     .calendar-frame iframe { width: 100%; height: 600px; border: none; display: block; }
-
     .cal-note { text-align: center; margin-top: 18px; font-size: .78rem; color: var(--muted); }
     .cal-note a { color: var(--gold); text-decoration: none; }
     .cal-note a:hover { text-decoration: underline; }
 
     footer {
       border-top: 1px solid rgba(255,255,255,.06);
-      padding: 28px 24px; text-align: center;
-      font-size: .78rem; color: #3d3630; letter-spacing: .04em;
+      padding: 28px 24px; text-align: center; font-size: .78rem; color: #3d3630; letter-spacing: .04em;
     }
-
     .deco {
       position: fixed; right: -60px; top: 30%;
       font-family: 'Playfair Display', serif; font-size: 28vw; font-style: italic;
       color: rgba(192,57,43,.04); pointer-events: none; user-select: none; line-height: 1; z-index: 0;
     }
 
-    /* ════════════════════════════════════════════
-       EVENT DETAIL MODAL
-    ════════════════════════════════════════════ */
+    /* ════════════════════════════════════
+       MODAL SHARED
+    ════════════════════════════════════ */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 1000;
       background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-      opacity: 0; pointer-events: none;
-      transition: opacity .2s;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
 
+    .modal-close {
+      position: absolute; top: 14px; right: 14px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,.07); border: none; color: var(--cream);
+      font-size: 1.1rem; cursor: pointer; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.15); }
+
+    /* ════════════════════════════════════
+       EVENT DETAIL MODAL
+    ════════════════════════════════════ */
     .modal {
       background: #1a1614; border: 1px solid rgba(255,255,255,.1);
       border-radius: 14px; width: 100%; max-width: 520px;
+      max-height: calc(100vh - 40px);          /* viewport-safe */
+      display: flex; flex-direction: column;   /* accent + scrollable body */
       overflow: hidden; position: relative;
       transform: translateY(16px) scale(.97);
       transition: transform .25s cubic-bezier(.22,1,.36,1);
@@ -271,105 +279,74 @@
     }
     .modal-overlay.open .modal { transform: none; }
 
-    .modal-accent { height: 4px; }
-    .modal[data-type="salsa"]    .modal-accent { background: var(--red); }
-    .modal[data-type="bachata"]  .modal-accent { background: #1a6b8a; }
-    .modal[data-type="warsztaty"].modal-accent { background: #2d7a3a; }
-    .modal[data-type="festiwale"].modal-accent { background: #5b2d8e; }
+    .modal-accent { height: 4px; flex-shrink: 0; }
+    .modal[data-primary="salsa"]    .modal-accent { background: var(--red); }
+    .modal[data-primary="bachata"]  .modal-accent { background: #1a6b8a; }
+    .modal[data-primary="warsztaty"].modal-accent { background: #2d7a3a; }
+    .modal[data-primary="festiwale"].modal-accent { background: #5b2d8e; }
+    .modal[data-primary="party"]    .modal-accent { background: #b5650d; }
 
-    .modal-close {
-      position: absolute; top: 16px; right: 16px;
-      width: 32px; height: 32px; border-radius: 50%;
-      background: rgba(255,255,255,.07); border: none;
-      color: var(--cream); font-size: 1.1rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .15s;
+    .modal-body {
+      padding: 22px 28px 28px;
+      overflow-y: auto;                        /* scroll when content tall */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.14) transparent;
     }
-    .modal-close:hover { background: rgba(255,255,255,.15); }
+    .modal-body::-webkit-scrollbar { width: 5px; }
+    .modal-body::-webkit-scrollbar-track { background: transparent; }
+    .modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border-radius: 3px; }
 
-    .modal-body { padding: 24px 28px 28px; }
-
-    .modal-badge {
-      display: inline-block; margin-bottom: 14px;
-      font-size: .62rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
-      padding: 3px 10px; border-radius: 3px;
-    }
-    .modal[data-type="salsa"]    .modal-badge { background: rgba(192,57,43,.18); color: #e07068; }
-    .modal[data-type="bachata"]  .modal-badge { background: rgba(26,107,138,.18); color: #5baec8; }
-    .modal[data-type="warsztaty"].modal-badge { background: rgba(45,122,58,.18);  color: #5cac6a; }
-    .modal[data-type="festiwale"].modal-badge { background: rgba(91,45,142,.18);  color: #b07ac8; }
-
+    .modal-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
     .modal-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.45rem; font-weight: 700; line-height: 1.2;
-      color: var(--cream); margin-bottom: 20px;
+      font-size: 1.4rem; font-weight: 700; line-height: 1.2; color: var(--cream); margin-bottom: 18px;
     }
-
     .modal-meta { display: flex; flex-direction: column; gap: 10px; }
-    .modal-meta-row {
-      display: flex; align-items: flex-start; gap: 12px;
-      font-size: .84rem; color: #c8b8a8;
-    }
-    .modal-meta-row svg { flex-shrink: 0; margin-top: 1px; opacity: .5; }
+    .modal-meta-row { display: flex; align-items: flex-start; gap: 12px; font-size: .84rem; color: #c8b8a8; }
+    .modal-meta-row svg { flex-shrink: 0; margin-top: 2px; opacity: .5; }
     .modal-meta-row strong { color: var(--cream); display: block; font-weight: 500; }
-
     .modal-desc {
-      margin-top: 16px; padding-top: 16px;
-      border-top: 1px solid var(--border);
-      font-size: .83rem; color: #a09080; line-height: 1.6;
-      white-space: pre-line;
+      margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);
+      font-size: .83rem; color: #a09080; line-height: 1.6; white-space: pre-line;
     }
-
-    .modal-actions {
-      display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap;
-    }
+    .modal-actions { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
     .btn-primary {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
-      padding: 10px 18px; border-radius: 6px;
-      background: var(--red); color: #fff;
+      padding: 10px 18px; border-radius: 6px; background: var(--red); color: #fff;
       font-family: 'DM Sans', sans-serif; font-size: .84rem; font-weight: 500;
-      border: none; cursor: pointer; text-decoration: none;
-      transition: background .2s;
+      border: none; cursor: pointer; text-decoration: none; transition: background .2s;
     }
     .btn-primary:hover { background: #a93226; }
     .btn-secondary {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
-      padding: 10px 18px; border-radius: 6px;
-      background: transparent; color: var(--cream);
+      padding: 10px 18px; border-radius: 6px; background: transparent; color: var(--cream);
       font-family: 'DM Sans', sans-serif; font-size: .84rem; font-weight: 500;
       border: 1px solid rgba(255,255,255,.15); cursor: pointer; text-decoration: none;
       transition: border-color .2s, background .2s;
     }
     .btn-secondary:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.3); }
 
-    /* ════════════════════════════════════════════
+    /* ════════════════════════════════════
        IMPORT CALENDAR MODAL
-    ════════════════════════════════════════════ */
+    ════════════════════════════════════ */
     .import-modal {
       background: #1a1614; border: 1px solid rgba(255,255,255,.1);
-      border-radius: 14px; width: 100%; max-width: 480px;
+      border-radius: 14px; width: 100%; max-width: 450px;
       overflow: hidden; position: relative;
       transform: translateY(16px) scale(.97);
       transition: transform .25s cubic-bezier(.22,1,.36,1);
       box-shadow: 0 40px 100px rgba(0,0,0,.8);
     }
     .modal-overlay.open .import-modal { transform: none; }
-
     .import-accent { height: 4px; background: var(--gold); }
     .import-body { padding: 26px 28px 28px; }
-    .import-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem; font-weight: 700;
-      color: var(--cream); margin-bottom: 6px;
-    }
-    .import-sub { font-size: .82rem; color: var(--muted); margin-bottom: 22px; }
-
+    .import-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--cream); margin-bottom: 5px; }
+    .import-sub { font-size: .82rem; color: var(--muted); margin-bottom: 20px; }
     .import-options { display: flex; flex-direction: column; gap: 10px; }
     .import-option {
       display: flex; align-items: center; gap: 14px;
       padding: 14px 16px; border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.09);
-      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.03);
       cursor: pointer; text-decoration: none; color: var(--cream);
       transition: border-color .2s, background .2s;
     }
@@ -377,37 +354,33 @@
     .import-option-icon { font-size: 1.5rem; width: 36px; text-align: center; flex-shrink: 0; }
     .import-option-label { font-size: .88rem; font-weight: 500; }
     .import-option-desc { font-size: .72rem; color: var(--muted); margin-top: 2px; }
-
     .import-divider {
       text-align: center; font-size: .72rem; color: var(--muted);
-      letter-spacing: .08em; text-transform: uppercase;
-      margin: 14px 0; position: relative;
+      letter-spacing: .08em; text-transform: uppercase; margin: 16px 0; position: relative;
     }
     .import-divider::before, .import-divider::after {
       content: ''; position: absolute; top: 50%;
-      width: calc(50% - 30px); height: 1px; background: var(--border);
+      width: calc(50% - 28px); height: 1px; background: var(--border);
     }
     .import-divider::before { left: 0; }
-    .import-divider::after { right: 0; }
-
+    .import-divider::after  { right: 0; }
     .ics-url-wrap {
       display: flex; gap: 8px; align-items: center;
-      background: rgba(255,255,255,.04); border: 1px solid var(--border);
-      border-radius: 6px; padding: 10px 12px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px;
     }
-    .ics-url-text { flex: 1; font-size: .7rem; color: var(--muted); word-break: break-all; user-select: all; }
+    .ics-url-text { flex: 1; font-size: .68rem; color: var(--muted); word-break: break-all; user-select: all; }
     .copy-btn {
       flex-shrink: 0; padding: 5px 12px; border-radius: 4px;
       background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
-      color: var(--cream); font-size: .72rem; cursor: pointer;
+      color: var(--cream); font-size: .72rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
       transition: background .15s;
     }
-    .copy-btn:hover { background: rgba(255,255,255,.15); }
+    .copy-btn:hover  { background: rgba(255,255,255,.15); }
     .copy-btn.copied { background: rgba(45,122,58,.3); border-color: #2d7a3a; color: #5cac6a; }
 
     @media(max-width:600px){
       .events-grid { grid-template-columns: 1fr; }
-      .modal-body, .import-body { padding: 20px; }
+      .modal-body, .import-body { padding: 18px; }
       .modal-actions { flex-direction: column; }
     }
   </style>
@@ -416,9 +389,8 @@
 
   <div class="deco">S</div>
 
-  <!-- ── HEADER ── -->
   <header>
-    <div class="tag">📍Białystok 2026</div>
+    <div class="tag">Białystok 2026</div>
     <h1>Sabor Latino<br><em>Salsa &amp; Bachata</em></h1>
     <p class="subtitle">Wszystkie eventy · warsztaty · potańcówki · festiwale</p>
     <button class="subscribe-btn" onclick="openImportModal()">
@@ -438,18 +410,19 @@
         <button class="pill" data-cat="salsa">Salsa</button>
         <button class="pill" data-cat="bachata">Bachata</button>
         <button class="pill" data-cat="warsztaty">Warsztaty</button>
+        <button class="pill" data-cat="party">Party</button>
         <button class="pill" data-cat="festiwale">Festiwale</button>
       </div>
     </div>
     <div class="filter-row" id="city-row" style="display:none">
       <span class="filter-label">Miasto</span>
-      <div class="pills" id="city-pills">
-        <button class="pill active" data-city="all">Wszystkie</button>
-      </div>
+      <select class="city-select" id="city-select">
+        <option value="all">Wszystkie miasta</option>
+      </select>
     </div>
   </div>
 
-  <!-- ── EVENTS GRID ── -->
+  <!-- ── EVENTS ── -->
   <div class="events-section">
     <div class="section-title">Nadchodzące eventy</div>
     <div class="events-grid" id="events-grid">
@@ -457,7 +430,7 @@
     </div>
   </div>
 
-  <!-- ── FULL CALENDAR ── -->
+  <!-- ── CALENDAR ── -->
   <div class="calendar-section">
     <div class="cal-section-header">
       <div class="section-title">Pełny kalendarz</div>
@@ -467,51 +440,45 @@
       <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FWarsaw&showPrint=0&showTitle=0&showCalendars=0&src=NDU5YzdhYmE5YmIwNmZiOWViZTgyOWNlMGVjNTdlMjBkOWIwMWVmZDZiM2U1YzU4NmE5ODFmOTdmMTcwN2JiOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=NGJjZmQ5YTdhYzI3MGZjMzI2N2I3MGVjNzkzN2MyM2I4YjFmNThiNTRlN2I0NGNkNjk0MmZmYmI3MGU1M2E0OUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=NWRjODA1YjZhNzAzNjFlZTI5MjEzZTMxN2Y4NWY1MDBiZWE2MzM0YWFlMjRiM2E1OWY2NjdjNzFjYWYwYjllMEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%237986cb&color=%23d50000&color=%237cb342"
         frameborder="0" scrolling="no"></iframe>
     </div>
-    <p class="cal-note">
-      Brakuje eventu? <a href="mailto:ty@example.com">Napisz do mnie</a> lub znajdź mnie na FB.
-    </p>
+    <p class="cal-note">Brakuje eventu? <a href="mailto:ty@example.com">Napisz do mnie</a> lub znajdź mnie na FB.</p>
   </div>
 
   <footer>Zrobione z ❤️ dla salsero community · Białystok</footer>
 
-  <!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════
        EVENT DETAIL MODAL
-  ══════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="modal-overlay" id="event-overlay" onclick="handleOverlayClick(event)">
-    <div class="modal" id="event-modal" data-type="salsa">
+    <div class="modal" id="event-modal" data-primary="salsa">
       <div class="modal-accent"></div>
       <button class="modal-close" onclick="closeEventModal()">✕</button>
       <div class="modal-body">
-        <span class="modal-badge" id="m-badge">Salsa</span>
-        <div class="modal-title" id="m-title">Nazwa eventu</div>
+        <div class="modal-badges" id="m-badges"></div>
+        <div class="modal-title" id="m-title"></div>
         <div class="modal-meta">
+
+          <!-- Date + start–end time in one row -->
           <div class="modal-meta-row">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
             <div>
-              <strong id="m-date">—</strong>
-              <span id="m-time"></span>
+              <strong id="m-date"></strong>
+              <span id="m-time" style="font-size:.82rem;color:#a09080"></span>
             </div>
           </div>
+
+          <!-- Location (hidden when empty) -->
           <div class="modal-meta-row" id="m-location-row" style="display:none">
             <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
               <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
             <div>
-              <strong id="m-location">—</strong>
-              <span id="m-city"></span>
+              <strong id="m-location"></strong>
             </div>
           </div>
-          <div class="modal-meta-row" id="m-duration-row" style="display:none">
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-            </svg>
-            <div>
-              <strong id="m-duration">—</strong>
-            </div>
-          </div>
+
         </div>
         <div class="modal-desc" id="m-desc" style="display:none"></div>
         <div class="modal-actions">
@@ -521,7 +488,7 @@
             </svg>
             Dodaj do Google Calendar
           </a>
-          <button class="btn-secondary" id="m-ics-btn" onclick="downloadEventIcs()">
+          <button class="btn-secondary" onclick="downloadEventIcs()">
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/>
             </svg>
@@ -532,9 +499,9 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
+  <!-- ══════════════════════════════
        IMPORT CALENDAR MODAL
-  ══════════════════════════════════════ -->
+  ══════════════════════════════ -->
   <div class="modal-overlay" id="import-overlay" onclick="handleImportOverlayClick(event)">
     <div class="import-modal">
       <div class="import-accent"></div>
@@ -550,13 +517,6 @@
               <div class="import-option-desc">Otwórz i kliknij „Dodaj"</div>
             </div>
           </a>
-          <a class="import-option" id="webcal-link" href="#">
-            <div class="import-option-icon">🍎</div>
-            <div>
-              <div class="import-option-label">Apple Calendar / Outlook</div>
-              <div class="import-option-desc">Otwiera aplikację kalendarza na Twoim urządzeniu</div>
-            </div>
-          </a>
           <a class="import-option" id="ics-dl-link" href="#" download="salsa-bialystok.ics">
             <div class="import-option-icon">📥</div>
             <div>
@@ -567,7 +527,7 @@
         </div>
         <div class="import-divider">lub skopiuj adres URL</div>
         <div class="ics-url-wrap">
-          <div class="ics-url-text" id="ics-url-text">ładowanie…</div>
+          <div class="ics-url-text" id="ics-url-text"></div>
           <button class="copy-btn" id="copy-url-btn" onclick="copyIcsUrl()">Kopiuj</button>
         </div>
       </div>
@@ -575,22 +535,22 @@
   </div>
 
   <script>
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // CONFIG
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   const ICS_URLS = [
     'https://calendar.google.com/calendar/ical/459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com/public/basic.ics',
   ];
+  const PROXY = 'https://corsproxy.io/?';
 
-  const PROXY     = 'https://corsproxy.io/?';
-  const DAYS_PL   = ['Nd','Pn','Wt','Śr','Cz','Pt','Sb'];
-  const MONTHS_PL = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+  const DAYS_PL        = ['Nd','Pn','Wt','Śr','Cz','Pt','Sb'];
+  const MONTHS_PL      = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
   const MONTH_NAMES_PL = ['Stycznia','Lutego','Marca','Kwietnia','Maja','Czerwca',
                           'Lipca','Sierpnia','Września','Października','Listopada','Grudnia'];
 
-  // ════════════════════════════════════════════════════════════════
-  // HELPERS — normalise Polish diacritics for matching
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
+  // NORMALISE Polish diacritics
+  // ════════════════════════════════════════════════
   function normalisePL(str) {
     return (str || '').toLowerCase()
       .replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e')
@@ -598,18 +558,16 @@
       .replace(/ś/g,'s').replace(/ź/g,'z').replace(/ż/g,'z');
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // iCal PARSER — robust, handles TZID, line folding, multi-line
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
+  // iCal PARSER
+  // ════════════════════════════════════════════════
   function parseIcs(text) {
-    // Unfold RFC-5545 line continuations first
     const unfolded = text.replace(/\r?\n[ \t]/g, '');
-    const events = [];
-    const blocks = unfolded.split(/BEGIN:VEVENT/i).slice(1);
+    const events   = [];
+    const blocks   = unfolded.split(/BEGIN:VEVENT/i).slice(1);
 
     for (const block of blocks) {
       const get = (key) => {
-        // Match KEY or KEY;params: value
         const re = new RegExp(`^${key}(?:;[^:]+)?:(.+)$`, 'im');
         const m  = block.match(re);
         return m ? m[1].trim() : '';
@@ -619,18 +577,21 @@
       const rawEnd   = get('DTEND');
       if (!rawStart) continue;
 
-      const summary  = unescapeIcs(get('SUMMARY'));
-      const location = unescapeIcs(get('LOCATION'));
-      const desc     = unescapeIcs(get('DESCRIPTION'));
-      const uid      = get('UID');
+      // Detect all-day: value part has no 'T'
+      const valPart = rawStart.includes(':') ? rawStart.split(':').pop() : rawStart;
+      const allDay  = !/T/.test(valPart);
 
-      const allDay = /^\d{8}$/.test(rawStart.split(':').pop() || rawStart);
-      const start  = parseIcsDate(rawStart, allDay);
-      const end    = rawEnd ? parseIcsDate(rawEnd, allDay) : null;
-
+      const start = parseIcsDate(rawStart, allDay);
+      const end   = rawEnd ? parseIcsDate(rawEnd, allDay) : null;
       if (!start || isNaN(start.getTime())) continue;
 
-      events.push({ uid, summary, location, desc, start, end, allDay });
+      events.push({
+        uid:      get('UID'),
+        summary:  unescapeIcs(get('SUMMARY')),
+        location: unescapeIcs(get('LOCATION')),
+        desc:     unescapeIcs(get('DESCRIPTION')),
+        start, end, allDay,
+      });
     }
     return events;
   }
@@ -641,62 +602,52 @@
   }
 
   function parseIcsDate(raw, allDay) {
-    // Strip property name if present (DTSTART;TZID=...:VALUE or DTSTART:VALUE)
     const val = raw.includes(':') ? raw.split(':').pop() : raw;
-    const v   = val.replace(/[^0-9TZ]/g,'');  // keep only digits, T, Z
+    const v   = val.replace(/[^0-9TZ]/g,'');
 
     if (allDay || /^\d{8}$/.test(v)) {
       const y = v.slice(0,4), mo = v.slice(4,6), d = v.slice(6,8);
       return new Date(`${y}-${mo}-${d}T00:00:00`);
     }
-
-    // With time: 20260509T190000Z or 20260509T190000
     const y  = v.slice(0,4), mo = v.slice(4,6), d  = v.slice(6,8);
     const hh = v.slice(9,11), mm = v.slice(11,13), ss = v.slice(13,15) || '00';
     if (v.endsWith('Z')) return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}Z`);
-    // Treat as local time (Warsaw)
     return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}`);
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // CATEGORISATION — diacritic-aware
-  // ════════════════════════════════════════════════════════════════
-  const CATS = {
-    festiwale: /festiwal|festival|kongres|congress|congress/,
-    warsztaty: /warsztat|kurs|lekcj|class|workshop|szkoleni|training|nauka/,
-    bachata:   /bachata/,
-    salsa:     /salsa|timba|casino|rueda|son cubano|mambo/,
-  };
+  // ════════════════════════════════════════════════
+  // MULTI-CATEGORY — returns ordered array
+  // Primary (first match) drives accent colour
+  // ════════════════════════════════════════════════
+  const CAT_RULES = [
+    { cat: 'festiwale', re: /festiwal|festival|kongres|congress/ },
+    { cat: 'warsztaty', re: /warsztat|kurs|lekcj|class|workshop|szkoleni|training|nauka/ },
+    // "practica / practis" = Latin-dance practice social → party
+    { cat: 'party',     re: /party|social|potancowk|practica|practis|wieczor taneczn|noc salsy|noc tanca/ },
+    { cat: 'bachata',   re: /bachata/ },
+    { cat: 'salsa',     re: /salsa|timba|casino|rueda|son cubano|mambo/ },
+  ];
 
-  function detectType(summary, location) {
-    const t = normalisePL(summary) + ' ' + normalisePL(location);
-    for (const [cat, re] of Object.entries(CATS)) {
-      if (re.test(t)) return cat;
-    }
-    // Default to salsa only if name has no contradictory keyword,
-    // otherwise label as 'other' — but we keep salsa as logical default
-    // for Latin dance events without specific keyword
-    return 'salsa';
+  function detectTypes(summary, location) {
+    const t     = normalisePL(summary) + ' ' + normalisePL(location);
+    const types = CAT_RULES.filter(r => r.re.test(t)).map(r => r.cat);
+    return types.length ? types : ['salsa'];
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // CITY EXTRACTION from LOCATION field
-  // ════════════════════════════════════════════════════════════════
-  // Common Polish city list for detection (extend as needed)
+  // ════════════════════════════════════════════════
+  // CITY DETECTION
+  // ════════════════════════════════════════════════
   const KNOWN_CITIES = [
     'Białystok','Warszawa','Kraków','Gdańsk','Gdynia','Poznań','Wrocław','Łódź',
     'Katowice','Lublin','Bydgoszcz','Szczecin','Rzeszów','Olsztyn','Toruń',
     'Kielce','Gorzów','Zielona Góra','Opole','Częstochowa',
   ];
-
   function detectCity(location) {
     if (!location) return null;
-    // Try exact match in known cities list (case-insensitive)
     const loc = location.toLowerCase();
     for (const c of KNOWN_CITIES) {
       if (loc.includes(c.toLowerCase())) return c;
     }
-    // Fallback: take last comma-separated token and capitalise
     const parts = location.split(',').map(p => p.trim()).filter(Boolean);
     const last  = parts[parts.length - 1];
     if (last && last.length > 2 && last.length < 40 && !/\d/.test(last)) {
@@ -705,25 +656,23 @@
     return null;
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // DURATION formatter
-  // ════════════════════════════════════════════════════════════════
-  function formatDuration(start, end) {
-    if (!end) return null;
-    const ms = end - start;
-    if (ms <= 0) return null;
-    const h  = Math.floor(ms / 3600000);
-    const m  = Math.floor((ms % 3600000) / 60000);
-    if (h === 0) return `${m} min`;
-    if (m === 0) return h === 1 ? '1 godzina' : `${h} godziny`;
-    return `${h} godz. ${m} min`;
+  // ════════════════════════════════════════════════
+  // BADGE RENDERING
+  // ════════════════════════════════════════════════
+  const LABELS = { salsa:'Salsa', bachata:'Bachata', warsztaty:'Warsztaty', festiwale:'Festiwale', party:'Party' };
+
+  function badgesHTML(types, extraStyle) {
+    return types.map(t =>
+      `<span class="card-badge badge-${t}"${extraStyle ? ` style="${extraStyle}"` : ''}>${LABELS[t] || t}</span>`
+    ).join('');
   }
 
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // RENDER CARD
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   function makeCard(ev) {
-    const type     = detectType(ev.summary, ev.location);
+    const types    = detectTypes(ev.summary, ev.location);
+    const primary  = types[0];
     const city     = detectCity(ev.location);
     const d        = ev.start;
     const dayNum   = String(d.getDate()).padStart(2,'0');
@@ -732,17 +681,16 @@
     const timeStr  = ev.allDay ? 'Cały dzień'
                    : d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
     const location = ev.location ? ev.location.split(',')[0] : '';
-    const labels   = { salsa:'Salsa', bachata:'Bachata', warsztaty:'Warsztaty', festiwale:'Festiwale' };
     const pinSvg   = `<svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
       <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
     </svg>`;
 
     const card = document.createElement('div');
-    card.className        = 'event-card';
-    card.dataset.type     = type;
-    card.dataset.city     = city || 'unknown';
-    card.dataset.eventIdx = String(ALL_EVENTS.length); // filled later
+    card.className       = 'event-card';
+    card.dataset.primary = primary;
+    card.dataset.types   = JSON.stringify(types);
+    card.dataset.city    = city || 'unknown';
     card.innerHTML = `
       <div class="card-top">
         <div class="card-day-block">
@@ -756,18 +704,18 @@
       <div class="card-body">
         <div class="card-title">${ev.summary || 'Bez nazwy'}</div>
         ${location ? `<div class="card-location">${pinSvg}${location}</div>` : ''}
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
+        <div class="card-badges">
           ${city ? `<span class="card-city-chip">${city}</span>` : ''}
-          <span class="card-badge">${labels[type] || 'Inne'}</span>
+          ${badgesHTML(types)}
         </div>
       </div>`;
-    card.addEventListener('click', () => openEventModal(ev, type, city));
+    card.addEventListener('click', () => openEventModal(ev, types, city));
     return card;
   }
 
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // MAIN LOAD
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   let ALL_EVENTS = [];
   let activeCat  = 'all';
   let activeCity = 'all';
@@ -775,7 +723,7 @@
   async function loadEvents() {
     const grid = document.getElementById('events-grid');
     const now  = new Date();
-    const max  = new Date(now.getTime() + 90 * 24 * 3600 * 1000); // 90 days
+    const max  = new Date(now.getTime() + 90 * 24 * 3600 * 1000);
 
     try {
       const texts = await Promise.all(
@@ -785,9 +733,7 @@
         )
       );
 
-      const raw = texts.flatMap(parseIcs);
-
-      // Deduplicate by UID, filter to upcoming window, sort
+      const raw  = texts.flatMap(parseIcs);
       const seen = new Set();
       ALL_EVENTS = raw
         .filter(ev => ev.start >= now && ev.start <= max)
@@ -795,8 +741,7 @@
         .filter(ev => {
           const key = ev.uid || (ev.summary + ev.start.toISOString());
           if (seen.has(key)) return false;
-          seen.add(key);
-          return true;
+          seen.add(key); return true;
         });
 
       grid.innerHTML = '';
@@ -806,52 +751,42 @@
         return;
       }
 
-      // Build city filter
       buildCityFilter();
-
       ALL_EVENTS.forEach(ev => grid.appendChild(makeCard(ev)));
       applyFilters();
 
     } catch (err) {
       console.error(err);
-      grid.innerHTML = `<div class="empty-msg">Nie udało się załadować eventów (${err.message}). Upewnij się, że kalendarze są publiczne.</div>`;
+      grid.innerHTML = `<div class="empty-msg">Nie udało się załadować eventów (${err.message}).</div>`;
     }
   }
 
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // FILTERS
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   function buildCityFilter() {
     const cities = [...new Set(ALL_EVENTS.map(ev => detectCity(ev.location)).filter(Boolean))].sort();
     if (!cities.length) return;
 
-    const wrap = document.getElementById('city-pills');
-    cities.forEach(city => {
-      const btn = document.createElement('button');
-      btn.className = 'pill';
-      btn.dataset.city = city;
-      btn.textContent = city;
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#city-pills .pill').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeCity = city;
-        applyFilters();
-      });
-      wrap.appendChild(btn);
+    const sel = document.getElementById('city-select');
+    cities.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
     });
-
+    sel.addEventListener('change', () => { activeCity = sel.value; applyFilters(); });
     document.getElementById('city-row').style.display = 'flex';
   }
 
   function applyFilters() {
     document.querySelectorAll('.event-card').forEach(c => {
-      const catOk  = activeCat === 'all'  || c.dataset.type === activeCat;
+      const types  = JSON.parse(c.dataset.types || '[]');
+      const catOk  = activeCat === 'all' || types.includes(activeCat);
       const cityOk = activeCity === 'all' || c.dataset.city === activeCity;
       c.classList.toggle('hidden', !(catOk && cityOk));
     });
   }
 
-  // Category pills
   document.querySelectorAll('#cat-pills .pill').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#cat-pills .pill').forEach(b => b.classList.remove('active'));
@@ -861,53 +796,41 @@
     });
   });
 
-  // City "all" pill
-  document.querySelector('#city-pills .pill[data-city="all"]').addEventListener('click', function() {
-    document.querySelectorAll('#city-pills .pill').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    activeCity = 'all';
-    applyFilters();
-  });
-
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // EVENT DETAIL MODAL
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   let currentEvent = null;
 
-  function openEventModal(ev, type, city) {
+  function openEventModal(ev, types, city) {
     currentEvent = ev;
-    const modal = document.getElementById('event-modal');
-    const labels = { salsa:'Salsa', bachata:'Bachata', warsztaty:'Warsztaty', festiwale:'Festiwale' };
+    const modal  = document.getElementById('event-modal');
+    modal.dataset.primary = types[0];
 
-    modal.dataset.type = type;
-    document.getElementById('m-badge').textContent   = labels[type] || 'Inne';
-    document.getElementById('m-title').textContent   = ev.summary || 'Bez nazwy';
+    // Badges
+    document.getElementById('m-badges').innerHTML =
+      badgesHTML(types, 'font-size:.65rem;padding:3px 10px');
 
-    // Date
+    // Title
+    document.getElementById('m-title').textContent = ev.summary || 'Bez nazwy';
+
+    // Date (first line: full date)
     const d = ev.start;
-    const dateStr = `${d.getDate()} ${MONTH_NAMES_PL[d.getMonth()]} ${d.getFullYear()} (${DAYS_PL[d.getDay()]})`;
-    document.getElementById('m-date').textContent = dateStr;
+    document.getElementById('m-date').textContent =
+      `${d.getDate()} ${MONTH_NAMES_PL[d.getMonth()]} ${d.getFullYear()} (${DAYS_PL[d.getDay()]})`;
 
-    // Time + duration
-    let timeStr = ev.allDay ? 'Cały dzień' : d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
-    const dur = ev.end ? formatDuration(ev.start, ev.end) : null;
-    if (dur && !ev.allDay) timeStr += ` — ${dur}`;
-    document.getElementById('m-time').textContent = timeStr;
-
-    // Duration row
-    const durRow = document.getElementById('m-duration-row');
-    if (dur && !ev.allDay) {
-      document.getElementById('m-duration').textContent = dur;
-      durRow.style.display = 'flex';
-    } else {
-      durRow.style.display = 'none';
+    // Time (second line: start – end)
+    let timeStr = 'Cały dzień';
+    if (!ev.allDay) {
+      const fmt = { hour: '2-digit', minute: '2-digit' };
+      const s   = d.toLocaleTimeString('pl-PL', fmt);
+      timeStr   = ev.end ? `${s} – ${ev.end.toLocaleTimeString('pl-PL', fmt)}` : s;
     }
+    document.getElementById('m-time').textContent = timeStr;
 
     // Location
     const locRow = document.getElementById('m-location-row');
     if (ev.location) {
       document.getElementById('m-location').textContent = ev.location;
-      document.getElementById('m-city').textContent = city ? `📍 ${city}` : '';
       locRow.style.display = 'flex';
     } else {
       locRow.style.display = 'none';
@@ -915,16 +838,13 @@
 
     // Description
     const descEl = document.getElementById('m-desc');
-    if (ev.desc) {
-      descEl.textContent = ev.desc;
-      descEl.style.display = 'block';
-    } else {
-      descEl.style.display = 'none';
-    }
+    if (ev.desc) { descEl.textContent = ev.desc; descEl.style.display = 'block'; }
+    else         { descEl.style.display = 'none'; }
 
-    // Google Calendar link
-    const gcalLink = buildGcalLink(ev);
-    document.getElementById('m-gcal-link').href = gcalLink;
+    document.getElementById('m-gcal-link').href = buildGcalLink(ev);
+
+    // Reset scroll position
+    modal.querySelector('.modal-body').scrollTop = 0;
 
     document.getElementById('event-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -938,85 +858,59 @@
     if (e.target === document.getElementById('event-overlay')) closeEventModal();
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // Google Calendar link builder
-  // ════════════════════════════════════════════════════════════════
-  function fmtGcalDate(date, allDay) {
-    if (allDay) {
-      return date.toISOString().slice(0,10).replace(/-/g,'');
-    }
-    return date.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  // ════════════════════════════════════════════════
+  // Google Calendar link
+  // ════════════════════════════════════════════════
+  function fmtGcalDate(d, allDay) {
+    if (allDay) return d.toISOString().slice(0,10).replace(/-/g,'');
+    return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
   }
-
   function buildGcalLink(ev) {
     const base  = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
-    const title = encodeURIComponent(ev.summary || '');
     const start = fmtGcalDate(ev.start, ev.allDay);
-    const end   = ev.end ? fmtGcalDate(ev.end, ev.allDay) : fmtGcalDate(new Date(ev.start.getTime() + 3600000), ev.allDay);
-    const loc   = encodeURIComponent(ev.location || '');
-    const desc  = encodeURIComponent(ev.desc || '');
-    return `${base}&text=${title}&dates=${start}/${end}&location=${loc}&details=${desc}`;
+    const end   = ev.end ? fmtGcalDate(ev.end, ev.allDay)
+                         : fmtGcalDate(new Date(ev.start.getTime() + 3600000), ev.allDay);
+    return `${base}&text=${encodeURIComponent(ev.summary||'')}&dates=${start}/${end}&location=${encodeURIComponent(ev.location||'')}&details=${encodeURIComponent(ev.desc||'')}`;
   }
 
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // Download single-event .ics
-  // ════════════════════════════════════════════════════════════════
-  function fmtIcsDate(date, allDay) {
-    if (allDay) return date.toISOString().slice(0,10).replace(/-/g,'');
-    return date.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'').replace('Z','Z');
+  // ════════════════════════════════════════════════
+  function fmtIcsDate(d, allDay) {
+    if (allDay) return d.toISOString().slice(0,10).replace(/-/g,'');
+    return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
   }
-
   function downloadEventIcs() {
     const ev = currentEvent;
     if (!ev) return;
-    const dtStart = ev.allDay
-      ? `DTSTART;VALUE=DATE:${fmtIcsDate(ev.start, true)}`
-      : `DTSTART:${fmtIcsDate(ev.start, false)}`;
-    const dtEnd = ev.end
-      ? (ev.allDay ? `DTEND;VALUE=DATE:${fmtIcsDate(ev.end, true)}` : `DTEND:${fmtIcsDate(ev.end, false)}`)
-      : '';
-
-    const ics = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//Sabor Latino//PL',
+    const dtStart = ev.allDay ? `DTSTART;VALUE=DATE:${fmtIcsDate(ev.start,true)}` : `DTSTART:${fmtIcsDate(ev.start,false)}`;
+    const dtEnd   = ev.end ? (ev.allDay ? `DTEND;VALUE=DATE:${fmtIcsDate(ev.end,true)}` : `DTEND:${fmtIcsDate(ev.end,false)}`) : '';
+    const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Sabor Latino//PL',
       'BEGIN:VEVENT',
-      `UID:${ev.uid || Date.now() + '@sabor-latino'}`,
-      `SUMMARY:${ev.summary || ''}`,
-      dtStart,
-      dtEnd,
+      `UID:${ev.uid || Date.now()+'@sabor-latino'}`,
+      `SUMMARY:${ev.summary||''}`, dtStart, dtEnd,
       ev.location ? `LOCATION:${ev.location}` : '',
       ev.desc ? `DESCRIPTION:${ev.desc.replace(/\n/g,'\\n')}` : '',
-      'END:VEVENT',
-      'END:VCALENDAR',
+      'END:VEVENT','END:VCALENDAR',
     ].filter(Boolean).join('\r\n');
-
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = (ev.summary || 'event').replace(/[^a-z0-9]/gi,'_').toLowerCase() + '.ics';
+    const url = URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
+    const a   = Object.assign(document.createElement('a'),{href:url,download:(ev.summary||'event').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.ics'});
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 3000);
   }
 
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // IMPORT CALENDAR MODAL
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   const ICS_FEED = ICS_URLS[0];
 
   function openImportModal() {
-    // Set up links
-    const gcalUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(ICS_FEED)}`;
-    document.getElementById('gcal-sub-link').href  = gcalUrl;
-    document.getElementById('webcal-link').href    = ICS_FEED.replace('https://','webcal://');
+    document.getElementById('gcal-sub-link').href  = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(ICS_FEED)}`;
     document.getElementById('ics-dl-link').href    = PROXY + encodeURIComponent(ICS_FEED);
     document.getElementById('ics-url-text').textContent = ICS_FEED;
-
     document.getElementById('import-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
-
   function closeImportModal() {
     document.getElementById('import-overlay').classList.remove('open');
     document.body.style.overflow = '';
@@ -1024,26 +918,18 @@
   function handleImportOverlayClick(e) {
     if (e.target === document.getElementById('import-overlay')) closeImportModal();
   }
-
   function copyIcsUrl() {
     navigator.clipboard.writeText(ICS_FEED).then(() => {
       const btn = document.getElementById('copy-url-btn');
-      btn.textContent = '✓ Skopiowano';
-      btn.classList.add('copied');
+      btn.textContent = '✓ Skopiowano'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Kopiuj'; btn.classList.remove('copied'); }, 2000);
     });
   }
 
-  // ════════════════════════════════════════════════════════════════
-  // KEYBOARD: ESC closes modals
-  // ════════════════════════════════════════════════════════════════
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closeEventModal(); closeImportModal(); }
   });
 
-  // ════════════════════════════════════════════════════════════════
-  // BOOT
-  // ════════════════════════════════════════════════════════════════
   loadEvents();
   </script>
 </body>
