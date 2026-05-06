@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salsa & Bachata — Twoje Miasto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #c0392b;
+      --gold:   #e8a020;
+      --dark:   #111010;
+      --darker: #0a0909;
+      --cream:  #f5f0e8;
+      --muted:  #7a6f65;
+    }
+
+    body {
+      background: var(--darker);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .5;
+    }
+
+    header {
+      position: relative;
+      padding: 60px 24px 48px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 160px;
+      background: radial-gradient(ellipse, rgba(192,57,43,.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(232,160,32,.35);
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -.02em;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .subtitle {
+      margin-top: 14px;
+      font-size: .95rem;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+
+    .subscribe-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 32px;
+      padding: 12px 28px;
+      background: var(--red);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+    }
+    .subscribe-btn:hover { background: #a93226; transform: translateY(-1px); }
+
+    .filters {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 32px 24px 0;
+    }
+
+    .pill {
+      padding: 7px 18px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: transparent;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem;
+      font-weight: 400;
+      letter-spacing: .04em;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .pill.active, .pill:hover { background: var(--red); border-color: var(--red); color: #fff; }
+    .pill.bachata.active      { background: #1a6b8a; border-color: #1a6b8a; }
+    .pill.kizomba.active      { background: #5b2d8e; border-color: #5b2d8e; }
+
+    .calendar-section {
+      position: relative;
+      max-width: 980px;
+      margin: 36px auto 0;
+      padding: 0 20px 60px;
+    }
+
+    .calendar-frame {
+      background: #1a1716;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      background: #141312;
+    }
+    .cal-header-title {
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .cal-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 8px var(--red);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    /* Google Calendar embed — inverted for dark mode */
+    .calendar-frame iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+      display: block;
+      filter: invert(1) hue-rotate(180deg) saturate(.85) brightness(.92);
+    }
+
+    .cal-note {
+      text-align: center;
+      margin-top: 18px;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    .cal-note a { color: var(--gold); text-decoration: none; }
+    .cal-note a:hover { text-decoration: underline; }
+
+    footer {
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 28px 24px;
+      text-align: center;
+      font-size: .78rem;
+      color: #3d3630;
+      letter-spacing: .04em;
+    }
+
+    .deco {
+      position: fixed;
+      right: -60px; top: 30%;
+      font-family: 'Playfair Display', serif;
+      font-size: 28vw;
+      font-style: italic;
+      color: rgba(192,57,43,.04);
+      pointer-events: none;
+      user-select: none;
+      line-height: 1;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deco">S</div>
+
+  <header>
+    <div class="tag">📍 Twoje Miasto · 2025</div>
+    <h1>Salsa &<br><em>Bachata</em></h1>
+    <p class="subtitle">Wszystkie eventy · warsztaty · potańcówki · festiwale</p>
+    <a class="subscribe-btn" href="#">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      Dodaj do swojego kalendarza
+    </a>
+  </header>
+
+  <div class="filters">
+    <button class="pill active">Wszystkie</button>
+    <button class="pill salsa">Salsa</button>
+    <button class="pill bachata">Bachata</button>
+    <button class="pill kizomba">Kizomba</button>
+    <button class="pill">Warsztaty</button>
+    <button class="pill">Festiwale</button>
+  </div>
+
+  <div class="calendar-section">
+    <div class="calendar-frame">
+      <div class="cal-header">
+        <span class="cal-header-title">Kalendarz eventów</span>
+        <span class="cal-dot"></span>
+      </div>
+
+      <!--
+        WKLEJ TUTAJ iframe z Google Calendar:
+        Ustawienia kalendarza → "Zintegruj kalendarz" → skopiuj embed
+      -->
+      <iframe
+        src="https://calendar.google.com/calendar/embed?src=TWOJ_ID%40group.calendar.google.com&ctz=Europe%2FWarsaw&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&mode=MONTH"
+        frameborder="0"
+        scrolling="no">
+      </iframe>
+    </div>
+
+    <p class="cal-note">
+      Brakuje eventu? <a href="mailto:ty@example.com">Napisz do mnie</a> lub znajdź mnie na FB.
+    </p>
+  </div>
+
+  <footer>
+    Zrobione z ❤️ dla salsero community · Twoje Miasto
+  </footer>
+
+  <script>
+    document.querySelectorAll('.pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
