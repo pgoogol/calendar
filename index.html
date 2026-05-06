@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Salsa & Bachata — Twoje Miasto</title>
+  <title>Sabor Latino — Salsa & Bachata Białystok</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,6 +70,7 @@
       color: var(--muted); letter-spacing: .04em;
     }
 
+    /* ── Subscribe button → now opens import modal ── */
     .subscribe-btn {
       display: inline-flex; align-items: center; gap: 8px;
       margin-top: 32px; padding: 12px 28px;
@@ -80,25 +81,43 @@
     }
     .subscribe-btn:hover { background: #a93226; transform: translateY(-1px); }
 
-    .filters {
-      display: flex; justify-content: center; flex-wrap: wrap;
-      gap: 10px; padding: 32px 24px 0;
+    /* ── Filter rows ── */
+    .filters-wrap {
+      max-width: 980px; margin: 0 auto; padding: 32px 20px 0;
     }
+    .filter-row {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      margin-bottom: 10px;
+    }
+    .filter-label {
+      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); min-width: 64px;
+    }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
 
     .pill {
-      padding: 7px 18px; border-radius: 100px;
+      padding: 6px 16px; border-radius: 100px;
       border: 1px solid rgba(255,255,255,.12); background: transparent;
       color: var(--cream); font-family: 'DM Sans', sans-serif;
-      font-size: .82rem; font-weight: 400; letter-spacing: .04em;
+      font-size: .78rem; font-weight: 400; letter-spacing: .04em;
       cursor: pointer; transition: all .2s;
     }
-    .pill.active, .pill:hover { background: var(--red); border-color: var(--red); color: #fff; }
-    .pill[data-filter="bachata"].active  { background: #1a6b8a; border-color: #1a6b8a; }
-    .pill[data-filter="warsztaty"].active{ background: #2d7a3a; border-color: #2d7a3a; }
-    .pill[data-filter="festiwale"].active{ background: #5b2d8e; border-color: #5b2d8e; }
+    .pill:hover { border-color: rgba(255,255,255,.3); }
+    .pill.active { color: #fff; }
 
+    /* category colours */
+    .pill[data-cat="salsa"].active    { background: var(--red);    border-color: var(--red); }
+    .pill[data-cat="bachata"].active  { background: #1a6b8a;       border-color: #1a6b8a; }
+    .pill[data-cat="warsztaty"].active{ background: #2d7a3a;       border-color: #2d7a3a; }
+    .pill[data-cat="festiwale"].active{ background: #5b2d8e;       border-color: #5b2d8e; }
+    .pill[data-cat="all"].active      { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); }
+
+    /* city pills */
+    .pill[data-city].active { background: #7a5c1e; border-color: var(--gold); color: var(--gold); }
+
+    /* ── Events section ── */
     .events-section {
-      max-width: 980px; margin: 36px auto 0; padding: 0 20px;
+      max-width: 980px; margin: 28px auto 0; padding: 0 20px;
     }
 
     .section-title {
@@ -130,18 +149,19 @@
 
     .empty-msg { grid-column: 1 / -1; color: var(--muted); font-size: .85rem; }
 
+    /* ── Event card ── */
     .event-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px; overflow: hidden;
-      position: relative;
+      position: relative; cursor: pointer;
       transition: border-color .2s, transform .2s, box-shadow .2s;
     }
     .event-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       opacity: 0; transition: opacity .2s;
     }
-    .event-card:hover { border-color: rgba(255,255,255,.16); transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+    .event-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,.5); }
     .event-card:hover::before { opacity: 1; }
     .event-card.hidden { display: none; }
 
@@ -164,10 +184,10 @@
     .card-divider { width: 1px; height: 28px; background: var(--border); }
     .card-time { font-size: .78rem; font-weight: 500; color: #a09080; }
     .card-dot { margin-left: auto; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .event-card[data-type="salsa"]    .card-dot { background: var(--red); box-shadow: 0 0 8px rgba(192,57,43,.5); }
-    .event-card[data-type="bachata"]  .card-dot { background: #1a6b8a; box-shadow: 0 0 8px rgba(26,107,138,.5); }
-    .event-card[data-type="warsztaty"].card-dot { background: #2d7a3a; box-shadow: 0 0 8px rgba(45,122,58,.5); }
-    .event-card[data-type="festiwale"].card-dot { background: #5b2d8e; box-shadow: 0 0 8px rgba(91,45,142,.5); }
+    .event-card[data-type="salsa"]    .card-dot { background: var(--red);  box-shadow: 0 0 8px rgba(192,57,43,.5); }
+    .event-card[data-type="bachata"]  .card-dot { background: #1a6b8a;     box-shadow: 0 0 8px rgba(26,107,138,.5); }
+    .event-card[data-type="warsztaty"].card-dot { background: #2d7a3a;     box-shadow: 0 0 8px rgba(45,122,58,.5); }
+    .event-card[data-type="festiwale"].card-dot { background: #5b2d8e;     box-shadow: 0 0 8px rgba(91,45,142,.5); }
 
     .card-body { padding: 14px 16px 16px; }
     .card-title {
@@ -176,8 +196,14 @@
       color: var(--cream); margin-bottom: 6px;
     }
     .card-location { font-size: .73rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+    .card-city-chip {
+      display: inline-block; margin-top: 8px; margin-right: 4px;
+      font-size: .6rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 3px;
+      background: rgba(232,160,32,.12); color: var(--gold); border: 1px solid rgba(232,160,32,.2);
+    }
     .card-badge {
-      display: inline-block; margin-top: 10px;
+      display: inline-block; margin-top: 8px;
       font-size: .63rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
       padding: 3px 8px; border-radius: 3px;
     }
@@ -186,6 +212,7 @@
     .event-card[data-type="warsztaty"].card-badge { background: rgba(45,122,58,.18);  color: #5cac6a; }
     .event-card[data-type="festiwale"].card-badge { background: rgba(91,45,142,.18);  color: #b07ac8; }
 
+    /* ── Calendar section ── */
     .calendar-section {
       max-width: 980px; margin: 0 auto; padding: 0 20px 60px;
     }
@@ -221,34 +248,208 @@
       color: rgba(192,57,43,.04); pointer-events: none; user-select: none; line-height: 1; z-index: 0;
     }
 
-    @media(max-width:600px){ .events-grid { grid-template-columns: 1fr; } }
+    /* ════════════════════════════════════════════
+       EVENT DETAIL MODAL
+    ════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #1a1614; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; width: 100%; max-width: 520px;
+      overflow: hidden; position: relative;
+      transform: translateY(16px) scale(.97);
+      transition: transform .25s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 40px 100px rgba(0,0,0,.8);
+    }
+    .modal-overlay.open .modal { transform: none; }
+
+    .modal-accent { height: 4px; }
+    .modal[data-type="salsa"]    .modal-accent { background: var(--red); }
+    .modal[data-type="bachata"]  .modal-accent { background: #1a6b8a; }
+    .modal[data-type="warsztaty"].modal-accent { background: #2d7a3a; }
+    .modal[data-type="festiwale"].modal-accent { background: #5b2d8e; }
+
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,.07); border: none;
+      color: var(--cream); font-size: 1.1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.15); }
+
+    .modal-body { padding: 24px 28px 28px; }
+
+    .modal-badge {
+      display: inline-block; margin-bottom: 14px;
+      font-size: .62rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 3px;
+    }
+    .modal[data-type="salsa"]    .modal-badge { background: rgba(192,57,43,.18); color: #e07068; }
+    .modal[data-type="bachata"]  .modal-badge { background: rgba(26,107,138,.18); color: #5baec8; }
+    .modal[data-type="warsztaty"].modal-badge { background: rgba(45,122,58,.18);  color: #5cac6a; }
+    .modal[data-type="festiwale"].modal-badge { background: rgba(91,45,142,.18);  color: #b07ac8; }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem; font-weight: 700; line-height: 1.2;
+      color: var(--cream); margin-bottom: 20px;
+    }
+
+    .modal-meta { display: flex; flex-direction: column; gap: 10px; }
+    .modal-meta-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: .84rem; color: #c8b8a8;
+    }
+    .modal-meta-row svg { flex-shrink: 0; margin-top: 1px; opacity: .5; }
+    .modal-meta-row strong { color: var(--cream); display: block; font-weight: 500; }
+
+    .modal-desc {
+      margin-top: 16px; padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: .83rem; color: #a09080; line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .modal-actions {
+      display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap;
+    }
+    .btn-primary {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 18px; border-radius: 6px;
+      background: var(--red); color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: .84rem; font-weight: 500;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-primary:hover { background: #a93226; }
+    .btn-secondary {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 18px; border-radius: 6px;
+      background: transparent; color: var(--cream);
+      font-family: 'DM Sans', sans-serif; font-size: .84rem; font-weight: 500;
+      border: 1px solid rgba(255,255,255,.15); cursor: pointer; text-decoration: none;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.3); }
+
+    /* ════════════════════════════════════════════
+       IMPORT CALENDAR MODAL
+    ════════════════════════════════════════════ */
+    .import-modal {
+      background: #1a1614; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px; width: 100%; max-width: 480px;
+      overflow: hidden; position: relative;
+      transform: translateY(16px) scale(.97);
+      transition: transform .25s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 40px 100px rgba(0,0,0,.8);
+    }
+    .modal-overlay.open .import-modal { transform: none; }
+
+    .import-accent { height: 4px; background: var(--gold); }
+    .import-body { padding: 26px 28px 28px; }
+    .import-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--cream); margin-bottom: 6px;
+    }
+    .import-sub { font-size: .82rem; color: var(--muted); margin-bottom: 22px; }
+
+    .import-options { display: flex; flex-direction: column; gap: 10px; }
+    .import-option {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.03);
+      cursor: pointer; text-decoration: none; color: var(--cream);
+      transition: border-color .2s, background .2s;
+    }
+    .import-option:hover { border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.06); }
+    .import-option-icon { font-size: 1.5rem; width: 36px; text-align: center; flex-shrink: 0; }
+    .import-option-label { font-size: .88rem; font-weight: 500; }
+    .import-option-desc { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+
+    .import-divider {
+      text-align: center; font-size: .72rem; color: var(--muted);
+      letter-spacing: .08em; text-transform: uppercase;
+      margin: 14px 0; position: relative;
+    }
+    .import-divider::before, .import-divider::after {
+      content: ''; position: absolute; top: 50%;
+      width: calc(50% - 30px); height: 1px; background: var(--border);
+    }
+    .import-divider::before { left: 0; }
+    .import-divider::after { right: 0; }
+
+    .ics-url-wrap {
+      display: flex; gap: 8px; align-items: center;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px;
+    }
+    .ics-url-text { flex: 1; font-size: .7rem; color: var(--muted); word-break: break-all; user-select: all; }
+    .copy-btn {
+      flex-shrink: 0; padding: 5px 12px; border-radius: 4px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      color: var(--cream); font-size: .72rem; cursor: pointer;
+      transition: background .15s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,.15); }
+    .copy-btn.copied { background: rgba(45,122,58,.3); border-color: #2d7a3a; color: #5cac6a; }
+
+    @media(max-width:600px){
+      .events-grid { grid-template-columns: 1fr; }
+      .modal-body, .import-body { padding: 20px; }
+      .modal-actions { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
 
   <div class="deco">S</div>
 
+  <!-- ── HEADER ── -->
   <header>
     <div class="tag">📍Białystok 2026</div>
-    <h2>Work In Progress</h2>
     <h1>Sabor Latino<br><em>Salsa &amp; Bachata</em></h1>
     <p class="subtitle">Wszystkie eventy · warsztaty · potańcówki · festiwale</p>
-    <a class="subscribe-btn" href="#">
+    <button class="subscribe-btn" onclick="openImportModal()">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
       </svg>
       Dodaj do swojego kalendarza
-    </a>
+    </button>
   </header>
 
-  <div class="filters">
-    <button class="pill active" data-filter="all">Wszystkie</button>
-    <button class="pill" data-filter="salsa">Salsa</button>
-    <button class="pill" data-filter="bachata">Bachata</button>
-    <button class="pill" data-filter="warsztaty">Warsztaty</button>
-    <button class="pill" data-filter="festiwale">Festiwale</button>
+  <!-- ── FILTERS ── -->
+  <div class="filters-wrap">
+    <div class="filter-row">
+      <span class="filter-label">Typ</span>
+      <div class="pills" id="cat-pills">
+        <button class="pill active" data-cat="all">Wszystkie</button>
+        <button class="pill" data-cat="salsa">Salsa</button>
+        <button class="pill" data-cat="bachata">Bachata</button>
+        <button class="pill" data-cat="warsztaty">Warsztaty</button>
+        <button class="pill" data-cat="festiwale">Festiwale</button>
+      </div>
+    </div>
+    <div class="filter-row" id="city-row" style="display:none">
+      <span class="filter-label">Miasto</span>
+      <div class="pills" id="city-pills">
+        <button class="pill active" data-city="all">Wszystkie</button>
+      </div>
+    </div>
   </div>
 
+  <!-- ── EVENTS GRID ── -->
   <div class="events-section">
     <div class="section-title">Nadchodzące eventy</div>
     <div class="events-grid" id="events-grid">
@@ -256,6 +457,7 @@
     </div>
   </div>
 
+  <!-- ── FULL CALENDAR ── -->
   <div class="calendar-section">
     <div class="cal-section-header">
       <div class="section-title">Pełny kalendarz</div>
@@ -272,170 +474,577 @@
 
   <footer>Zrobione z ❤️ dla salsero community · Białystok</footer>
 
-  <script>
-    // Publiczne URL-e iCal Twoich kalendarzy (bez żadnego klucza API)
-    const ICS_URLS = [
-      'https://calendar.google.com/calendar/ical/459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com/public/basic.ics',
-    ];
-
-    // CORS proxy — potrzebny bo przeglądarka blokuje bezpośredni fetch do calendar.google.com
-    const PROXY = 'https://corsproxy.io/?';
-
-    const DAYS_PL   = ['Nd','Pn','Wt','Śr','Cz','Pt','Sb'];
-    const MONTHS_PL = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
-
-    // ── Parsowanie iCal ──────────────────────────────────────────────────────
-    function parseIcs(text) {
-      const events = [];
-      const blocks = text.split('BEGIN:VEVENT').slice(1);
-
-      for (const block of blocks) {
-        const get = (key) => {
-          // obsługa złamanych linii (RFC 5545 line folding)
-          const unfolded = block.replace(/\r?\n[ \t]/g, '');
-          const m = unfolded.match(new RegExp(`^${key}[^:]*:(.+)$`, 'm'));
-          return m ? m[1].trim() : '';
-        };
-
-        const rawStart = get('DTSTART');
-        const rawEnd   = get('DTEND');
-        if (!rawStart) continue;
-
-        events.push({
-          uid:      get('UID'),
-          summary:  unescape(get('SUMMARY')),
-          location: unescape(get('LOCATION')),
-          start:    parseIcsDate(rawStart),
-          end:      parseIcsDate(rawEnd),
-          allDay:   !rawStart.includes('T'),
-        });
-      }
-      return events;
-    }
-
-    function unescape(s) {
-      return s.replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
-    }
-
-    function parseIcsDate(raw) {
-      // Formaty: 20260509T190000Z  lub  20260509T190000  lub  20260509
-      const s = raw.replace(/[TZ]/g, s => s === 'T' ? '-' : '').trim();
-      if (s.length === 8) {
-        // data bez czasu
-        const y = s.slice(0,4), mo = s.slice(4,6), d = s.slice(6,8);
-        return new Date(`${y}-${mo}-${d}`);
-      }
-      // z czasem — traktuj jako lokalne jeśli brak Z
-      const y  = s.slice(0,4), mo = s.slice(4,6), d  = s.slice(6,8);
-      const hh = s.slice(9,11), mm = s.slice(11,13), ss = s.slice(13,15) || '00';
-      if (raw.endsWith('Z')) return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}Z`);
-      return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}`);
-    }
-
-    // ── Kategoryzacja ────────────────────────────────────────────────────────
-    function detectType(summary) {
-      const t = (summary || '').toLowerCase();
-      if (/festiwal|festival|congres/.test(t))        return 'festiwale';
-      if (/warsztat|kurs|lekcj|class|workshop/.test(t)) return 'warsztaty';
-      if (/bachata/.test(t))                            return 'bachata';
-      return 'salsa';
-    }
-
-    // ── Renderowanie karty ───────────────────────────────────────────────────
-    function makeCard(ev) {
-      const type     = detectType(ev.summary);
-      const d        = ev.start;
-      const dayNum   = String(d.getDate()).padStart(2, '0');
-      const dayName  = DAYS_PL[d.getDay()];
-      const month    = MONTHS_PL[d.getMonth()];
-      const timeStr  = ev.allDay ? 'Cały dzień'
-        : d.toLocaleTimeString('pl-PL', { hour:'2-digit', minute:'2-digit' });
-      const location = ev.location ? ev.location.split(',')[0] : '';
-      const labels   = { salsa:'Salsa', bachata:'Bachata', warsztaty:'Warsztaty', festiwale:'Festiwale' };
-      const pinSvg   = `<svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-      </svg>`;
-
-      const card = document.createElement('div');
-      card.className  = 'event-card';
-      card.dataset.type = type;
-      card.innerHTML  = `
-        <div class="card-top">
-          <div class="card-day-block">
-            <div class="card-day-num">${dayNum}</div>
-            <div class="card-day-name">${dayName} · ${month}</div>
+  <!-- ══════════════════════════════════════
+       EVENT DETAIL MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" id="event-overlay" onclick="handleOverlayClick(event)">
+    <div class="modal" id="event-modal" data-type="salsa">
+      <div class="modal-accent"></div>
+      <button class="modal-close" onclick="closeEventModal()">✕</button>
+      <div class="modal-body">
+        <span class="modal-badge" id="m-badge">Salsa</span>
+        <div class="modal-title" id="m-title">Nazwa eventu</div>
+        <div class="modal-meta">
+          <div class="modal-meta-row">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <div>
+              <strong id="m-date">—</strong>
+              <span id="m-time"></span>
+            </div>
           </div>
-          <div class="card-divider"></div>
-          <div class="card-time">${timeStr}</div>
-          <div class="card-dot"></div>
+          <div class="modal-meta-row" id="m-location-row" style="display:none">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <div>
+              <strong id="m-location">—</strong>
+              <span id="m-city"></span>
+            </div>
+          </div>
+          <div class="modal-meta-row" id="m-duration-row" style="display:none">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            <div>
+              <strong id="m-duration">—</strong>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <div class="card-title">${ev.summary || 'Bez nazwy'}</div>
-          ${location ? `<div class="card-location">${pinSvg}${location}</div>` : ''}
-          <span class="card-badge">${labels[type]}</span>
-        </div>`;
-      return card;
+        <div class="modal-desc" id="m-desc" style="display:none"></div>
+        <div class="modal-actions">
+          <a class="btn-primary" id="m-gcal-link" href="#" target="_blank" rel="noopener">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            Dodaj do Google Calendar
+          </a>
+          <button class="btn-secondary" id="m-ics-btn" onclick="downloadEventIcs()">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4 4-4-4M12 4v12"/>
+            </svg>
+            Pobierz .ics
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       IMPORT CALENDAR MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" id="import-overlay" onclick="handleImportOverlayClick(event)">
+    <div class="import-modal">
+      <div class="import-accent"></div>
+      <button class="modal-close" onclick="closeImportModal()">✕</button>
+      <div class="import-body">
+        <div class="import-title">Dodaj do kalendarza</div>
+        <div class="import-sub">Subskrybuj, żeby automatycznie widzieć nowe eventy</div>
+        <div class="import-options">
+          <a class="import-option" id="gcal-sub-link" href="#" target="_blank" rel="noopener">
+            <div class="import-option-icon">📅</div>
+            <div>
+              <div class="import-option-label">Google Calendar</div>
+              <div class="import-option-desc">Otwórz i kliknij „Dodaj"</div>
+            </div>
+          </a>
+          <a class="import-option" id="webcal-link" href="#">
+            <div class="import-option-icon">🍎</div>
+            <div>
+              <div class="import-option-label">Apple Calendar / Outlook</div>
+              <div class="import-option-desc">Otwiera aplikację kalendarza na Twoim urządzeniu</div>
+            </div>
+          </a>
+          <a class="import-option" id="ics-dl-link" href="#" download="salsa-bialystok.ics">
+            <div class="import-option-icon">📥</div>
+            <div>
+              <div class="import-option-label">Pobierz plik .ics</div>
+              <div class="import-option-desc">Importuj ręcznie do dowolnego kalendarza</div>
+            </div>
+          </a>
+        </div>
+        <div class="import-divider">lub skopiuj adres URL</div>
+        <div class="ics-url-wrap">
+          <div class="ics-url-text" id="ics-url-text">ładowanie…</div>
+          <button class="copy-btn" id="copy-url-btn" onclick="copyIcsUrl()">Kopiuj</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ════════════════════════════════════════════════════════════════
+  // CONFIG
+  // ════════════════════════════════════════════════════════════════
+  const ICS_URLS = [
+    'https://calendar.google.com/calendar/ical/459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com/public/basic.ics',
+  ];
+
+  const PROXY     = 'https://corsproxy.io/?';
+  const DAYS_PL   = ['Nd','Pn','Wt','Śr','Cz','Pt','Sb'];
+  const MONTHS_PL = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+  const MONTH_NAMES_PL = ['Stycznia','Lutego','Marca','Kwietnia','Maja','Czerwca',
+                          'Lipca','Sierpnia','Września','Października','Listopada','Grudnia'];
+
+  // ════════════════════════════════════════════════════════════════
+  // HELPERS — normalise Polish diacritics for matching
+  // ════════════════════════════════════════════════════════════════
+  function normalisePL(str) {
+    return (str || '').toLowerCase()
+      .replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e')
+      .replace(/ł/g,'l').replace(/ń/g,'n').replace(/ó/g,'o')
+      .replace(/ś/g,'s').replace(/ź/g,'z').replace(/ż/g,'z');
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // iCal PARSER — robust, handles TZID, line folding, multi-line
+  // ════════════════════════════════════════════════════════════════
+  function parseIcs(text) {
+    // Unfold RFC-5545 line continuations first
+    const unfolded = text.replace(/\r?\n[ \t]/g, '');
+    const events = [];
+    const blocks = unfolded.split(/BEGIN:VEVENT/i).slice(1);
+
+    for (const block of blocks) {
+      const get = (key) => {
+        // Match KEY or KEY;params: value
+        const re = new RegExp(`^${key}(?:;[^:]+)?:(.+)$`, 'im');
+        const m  = block.match(re);
+        return m ? m[1].trim() : '';
+      };
+
+      const rawStart = get('DTSTART');
+      const rawEnd   = get('DTEND');
+      if (!rawStart) continue;
+
+      const summary  = unescapeIcs(get('SUMMARY'));
+      const location = unescapeIcs(get('LOCATION'));
+      const desc     = unescapeIcs(get('DESCRIPTION'));
+      const uid      = get('UID');
+
+      const allDay = /^\d{8}$/.test(rawStart.split(':').pop() || rawStart);
+      const start  = parseIcsDate(rawStart, allDay);
+      const end    = rawEnd ? parseIcsDate(rawEnd, allDay) : null;
+
+      if (!start || isNaN(start.getTime())) continue;
+
+      events.push({ uid, summary, location, desc, start, end, allDay });
+    }
+    return events;
+  }
+
+  function unescapeIcs(s) {
+    return (s || '').replace(/\\,/g,',').replace(/\\;/g,';')
+                    .replace(/\\n/g,'\n').replace(/\\\\/g,'\\').trim();
+  }
+
+  function parseIcsDate(raw, allDay) {
+    // Strip property name if present (DTSTART;TZID=...:VALUE or DTSTART:VALUE)
+    const val = raw.includes(':') ? raw.split(':').pop() : raw;
+    const v   = val.replace(/[^0-9TZ]/g,'');  // keep only digits, T, Z
+
+    if (allDay || /^\d{8}$/.test(v)) {
+      const y = v.slice(0,4), mo = v.slice(4,6), d = v.slice(6,8);
+      return new Date(`${y}-${mo}-${d}T00:00:00`);
     }
 
-    // ── Główna logika ────────────────────────────────────────────────────────
-    async function loadEvents() {
-      const grid = document.getElementById('events-grid');
-      const now  = new Date();
-      const max  = new Date(now.getTime() + 60 * 24 * 3600 * 1000);
+    // With time: 20260509T190000Z or 20260509T190000
+    const y  = v.slice(0,4), mo = v.slice(4,6), d  = v.slice(6,8);
+    const hh = v.slice(9,11), mm = v.slice(11,13), ss = v.slice(13,15) || '00';
+    if (v.endsWith('Z')) return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}Z`);
+    // Treat as local time (Warsaw)
+    return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}`);
+  }
 
-      try {
-        const texts = await Promise.all(
-          ICS_URLS.map(url =>
-            fetch(PROXY + encodeURIComponent(url)).then(r => {
-              if (!r.ok) throw new Error(`HTTP ${r.status}`);
-              return r.text();
-            })
-          )
-        );
+  // ════════════════════════════════════════════════════════════════
+  // CATEGORISATION — diacritic-aware
+  // ════════════════════════════════════════════════════════════════
+  const CATS = {
+    festiwale: /festiwal|festival|kongres|congress|congress/,
+    warsztaty: /warsztat|kurs|lekcj|class|workshop|szkoleni|training|nauka/,
+    bachata:   /bachata/,
+    salsa:     /salsa|timba|casino|rueda|son cubano|mambo/,
+  };
 
-        const allEvents = texts.flatMap(parseIcs);
+  function detectType(summary, location) {
+    const t = normalisePL(summary) + ' ' + normalisePL(location);
+    for (const [cat, re] of Object.entries(CATS)) {
+      if (re.test(t)) return cat;
+    }
+    // Default to salsa only if name has no contradictory keyword,
+    // otherwise label as 'other' — but we keep salsa as logical default
+    // for Latin dance events without specific keyword
+    return 'salsa';
+  }
 
-        // odfiltruj przeszłe i za odległe, posortuj, deduplikuj
-        const seen = new Set();
-        const upcoming = allEvents
-          .filter(ev => ev.start >= now && ev.start <= max)
-          .sort((a, b) => a.start - b.start)
-          .filter(ev => { if (seen.has(ev.uid)) return false; seen.add(ev.uid); return true; })
-          .slice(0, 12);
+  // ════════════════════════════════════════════════════════════════
+  // CITY EXTRACTION from LOCATION field
+  // ════════════════════════════════════════════════════════════════
+  // Common Polish city list for detection (extend as needed)
+  const KNOWN_CITIES = [
+    'Białystok','Warszawa','Kraków','Gdańsk','Gdynia','Poznań','Wrocław','Łódź',
+    'Katowice','Lublin','Bydgoszcz','Szczecin','Rzeszów','Olsztyn','Toruń',
+    'Kielce','Gorzów','Zielona Góra','Opole','Częstochowa',
+  ];
 
-        grid.innerHTML = '';
+  function detectCity(location) {
+    if (!location) return null;
+    // Try exact match in known cities list (case-insensitive)
+    const loc = location.toLowerCase();
+    for (const c of KNOWN_CITIES) {
+      if (loc.includes(c.toLowerCase())) return c;
+    }
+    // Fallback: take last comma-separated token and capitalise
+    const parts = location.split(',').map(p => p.trim()).filter(Boolean);
+    const last  = parts[parts.length - 1];
+    if (last && last.length > 2 && last.length < 40 && !/\d/.test(last)) {
+      return last.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    }
+    return null;
+  }
 
-        if (!upcoming.length) {
-          grid.innerHTML = '<div class="empty-msg">Brak nadchodzących eventów w ciągu najbliższych 60 dni.</div>';
-          return;
-        }
+  // ════════════════════════════════════════════════════════════════
+  // DURATION formatter
+  // ════════════════════════════════════════════════════════════════
+  function formatDuration(start, end) {
+    if (!end) return null;
+    const ms = end - start;
+    if (ms <= 0) return null;
+    const h  = Math.floor(ms / 3600000);
+    const m  = Math.floor((ms % 3600000) / 60000);
+    if (h === 0) return `${m} min`;
+    if (m === 0) return h === 1 ? '1 godzina' : `${h} godziny`;
+    return `${h} godz. ${m} min`;
+  }
 
-        upcoming.forEach(ev => grid.appendChild(makeCard(ev)));
-        applyFilter('all');
+  // ════════════════════════════════════════════════════════════════
+  // RENDER CARD
+  // ════════════════════════════════════════════════════════════════
+  function makeCard(ev) {
+    const type     = detectType(ev.summary, ev.location);
+    const city     = detectCity(ev.location);
+    const d        = ev.start;
+    const dayNum   = String(d.getDate()).padStart(2,'0');
+    const dayName  = DAYS_PL[d.getDay()];
+    const month    = MONTHS_PL[d.getMonth()];
+    const timeStr  = ev.allDay ? 'Cały dzień'
+                   : d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+    const location = ev.location ? ev.location.split(',')[0] : '';
+    const labels   = { salsa:'Salsa', bachata:'Bachata', warsztaty:'Warsztaty', festiwale:'Festiwale' };
+    const pinSvg   = `<svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+      <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>`;
 
-      } catch (err) {
-        console.error(err);
-        grid.innerHTML = `<div class="empty-msg">Nie udało się załadować eventów (${err.message}). Upewnij się, że kalendarze są publiczne.</div>`;
+    const card = document.createElement('div');
+    card.className        = 'event-card';
+    card.dataset.type     = type;
+    card.dataset.city     = city || 'unknown';
+    card.dataset.eventIdx = String(ALL_EVENTS.length); // filled later
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-day-block">
+          <div class="card-day-num">${dayNum}</div>
+          <div class="card-day-name">${dayName} · ${month}</div>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-time">${timeStr}</div>
+        <div class="card-dot"></div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${ev.summary || 'Bez nazwy'}</div>
+        ${location ? `<div class="card-location">${pinSvg}${location}</div>` : ''}
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
+          ${city ? `<span class="card-city-chip">${city}</span>` : ''}
+          <span class="card-badge">${labels[type] || 'Inne'}</span>
+        </div>
+      </div>`;
+    card.addEventListener('click', () => openEventModal(ev, type, city));
+    return card;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // MAIN LOAD
+  // ════════════════════════════════════════════════════════════════
+  let ALL_EVENTS = [];
+  let activeCat  = 'all';
+  let activeCity = 'all';
+
+  async function loadEvents() {
+    const grid = document.getElementById('events-grid');
+    const now  = new Date();
+    const max  = new Date(now.getTime() + 90 * 24 * 3600 * 1000); // 90 days
+
+    try {
+      const texts = await Promise.all(
+        ICS_URLS.map(url =>
+          fetch(PROXY + encodeURIComponent(url))
+            .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
+        )
+      );
+
+      const raw = texts.flatMap(parseIcs);
+
+      // Deduplicate by UID, filter to upcoming window, sort
+      const seen = new Set();
+      ALL_EVENTS = raw
+        .filter(ev => ev.start >= now && ev.start <= max)
+        .sort((a,b) => a.start - b.start)
+        .filter(ev => {
+          const key = ev.uid || (ev.summary + ev.start.toISOString());
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+      grid.innerHTML = '';
+
+      if (!ALL_EVENTS.length) {
+        grid.innerHTML = '<div class="empty-msg">Brak nadchodzących eventów w ciągu najbliższych 90 dni.</div>';
+        return;
       }
-    }
 
-    // ── Filtry ───────────────────────────────────────────────────────────────
-    function applyFilter(filter) {
-      document.querySelectorAll('.event-card').forEach(c => {
-        c.classList.toggle('hidden', filter !== 'all' && c.dataset.type !== filter);
-      });
-    }
+      // Build city filter
+      buildCityFilter();
 
-    document.querySelectorAll('.pill').forEach(btn => {
+      ALL_EVENTS.forEach(ev => grid.appendChild(makeCard(ev)));
+      applyFilters();
+
+    } catch (err) {
+      console.error(err);
+      grid.innerHTML = `<div class="empty-msg">Nie udało się załadować eventów (${err.message}). Upewnij się, że kalendarze są publiczne.</div>`;
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // FILTERS
+  // ════════════════════════════════════════════════════════════════
+  function buildCityFilter() {
+    const cities = [...new Set(ALL_EVENTS.map(ev => detectCity(ev.location)).filter(Boolean))].sort();
+    if (!cities.length) return;
+
+    const wrap = document.getElementById('city-pills');
+    cities.forEach(city => {
+      const btn = document.createElement('button');
+      btn.className = 'pill';
+      btn.dataset.city = city;
+      btn.textContent = city;
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#city-pills .pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        applyFilter(btn.dataset.filter);
+        activeCity = city;
+        applyFilters();
       });
+      wrap.appendChild(btn);
     });
 
-    loadEvents();
+    document.getElementById('city-row').style.display = 'flex';
+  }
+
+  function applyFilters() {
+    document.querySelectorAll('.event-card').forEach(c => {
+      const catOk  = activeCat === 'all'  || c.dataset.type === activeCat;
+      const cityOk = activeCity === 'all' || c.dataset.city === activeCity;
+      c.classList.toggle('hidden', !(catOk && cityOk));
+    });
+  }
+
+  // Category pills
+  document.querySelectorAll('#cat-pills .pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#cat-pills .pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCat = btn.dataset.cat;
+      applyFilters();
+    });
+  });
+
+  // City "all" pill
+  document.querySelector('#city-pills .pill[data-city="all"]').addEventListener('click', function() {
+    document.querySelectorAll('#city-pills .pill').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    activeCity = 'all';
+    applyFilters();
+  });
+
+  // ════════════════════════════════════════════════════════════════
+  // EVENT DETAIL MODAL
+  // ════════════════════════════════════════════════════════════════
+  let currentEvent = null;
+
+  function openEventModal(ev, type, city) {
+    currentEvent = ev;
+    const modal = document.getElementById('event-modal');
+    const labels = { salsa:'Salsa', bachata:'Bachata', warsztaty:'Warsztaty', festiwale:'Festiwale' };
+
+    modal.dataset.type = type;
+    document.getElementById('m-badge').textContent   = labels[type] || 'Inne';
+    document.getElementById('m-title').textContent   = ev.summary || 'Bez nazwy';
+
+    // Date
+    const d = ev.start;
+    const dateStr = `${d.getDate()} ${MONTH_NAMES_PL[d.getMonth()]} ${d.getFullYear()} (${DAYS_PL[d.getDay()]})`;
+    document.getElementById('m-date').textContent = dateStr;
+
+    // Time + duration
+    let timeStr = ev.allDay ? 'Cały dzień' : d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+    const dur = ev.end ? formatDuration(ev.start, ev.end) : null;
+    if (dur && !ev.allDay) timeStr += ` — ${dur}`;
+    document.getElementById('m-time').textContent = timeStr;
+
+    // Duration row
+    const durRow = document.getElementById('m-duration-row');
+    if (dur && !ev.allDay) {
+      document.getElementById('m-duration').textContent = dur;
+      durRow.style.display = 'flex';
+    } else {
+      durRow.style.display = 'none';
+    }
+
+    // Location
+    const locRow = document.getElementById('m-location-row');
+    if (ev.location) {
+      document.getElementById('m-location').textContent = ev.location;
+      document.getElementById('m-city').textContent = city ? `📍 ${city}` : '';
+      locRow.style.display = 'flex';
+    } else {
+      locRow.style.display = 'none';
+    }
+
+    // Description
+    const descEl = document.getElementById('m-desc');
+    if (ev.desc) {
+      descEl.textContent = ev.desc;
+      descEl.style.display = 'block';
+    } else {
+      descEl.style.display = 'none';
+    }
+
+    // Google Calendar link
+    const gcalLink = buildGcalLink(ev);
+    document.getElementById('m-gcal-link').href = gcalLink;
+
+    document.getElementById('event-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeEventModal() {
+    document.getElementById('event-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('event-overlay')) closeEventModal();
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // Google Calendar link builder
+  // ════════════════════════════════════════════════════════════════
+  function fmtGcalDate(date, allDay) {
+    if (allDay) {
+      return date.toISOString().slice(0,10).replace(/-/g,'');
+    }
+    return date.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  }
+
+  function buildGcalLink(ev) {
+    const base  = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+    const title = encodeURIComponent(ev.summary || '');
+    const start = fmtGcalDate(ev.start, ev.allDay);
+    const end   = ev.end ? fmtGcalDate(ev.end, ev.allDay) : fmtGcalDate(new Date(ev.start.getTime() + 3600000), ev.allDay);
+    const loc   = encodeURIComponent(ev.location || '');
+    const desc  = encodeURIComponent(ev.desc || '');
+    return `${base}&text=${title}&dates=${start}/${end}&location=${loc}&details=${desc}`;
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // Download single-event .ics
+  // ════════════════════════════════════════════════════════════════
+  function fmtIcsDate(date, allDay) {
+    if (allDay) return date.toISOString().slice(0,10).replace(/-/g,'');
+    return date.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'').replace('Z','Z');
+  }
+
+  function downloadEventIcs() {
+    const ev = currentEvent;
+    if (!ev) return;
+    const dtStart = ev.allDay
+      ? `DTSTART;VALUE=DATE:${fmtIcsDate(ev.start, true)}`
+      : `DTSTART:${fmtIcsDate(ev.start, false)}`;
+    const dtEnd = ev.end
+      ? (ev.allDay ? `DTEND;VALUE=DATE:${fmtIcsDate(ev.end, true)}` : `DTEND:${fmtIcsDate(ev.end, false)}`)
+      : '';
+
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Sabor Latino//PL',
+      'BEGIN:VEVENT',
+      `UID:${ev.uid || Date.now() + '@sabor-latino'}`,
+      `SUMMARY:${ev.summary || ''}`,
+      dtStart,
+      dtEnd,
+      ev.location ? `LOCATION:${ev.location}` : '',
+      ev.desc ? `DESCRIPTION:${ev.desc.replace(/\n/g,'\\n')}` : '',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].filter(Boolean).join('\r\n');
+
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = (ev.summary || 'event').replace(/[^a-z0-9]/gi,'_').toLowerCase() + '.ics';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // IMPORT CALENDAR MODAL
+  // ════════════════════════════════════════════════════════════════
+  const ICS_FEED = ICS_URLS[0];
+
+  function openImportModal() {
+    // Set up links
+    const gcalUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(ICS_FEED)}`;
+    document.getElementById('gcal-sub-link').href  = gcalUrl;
+    document.getElementById('webcal-link').href    = ICS_FEED.replace('https://','webcal://');
+    document.getElementById('ics-dl-link').href    = PROXY + encodeURIComponent(ICS_FEED);
+    document.getElementById('ics-url-text').textContent = ICS_FEED;
+
+    document.getElementById('import-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeImportModal() {
+    document.getElementById('import-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function handleImportOverlayClick(e) {
+    if (e.target === document.getElementById('import-overlay')) closeImportModal();
+  }
+
+  function copyIcsUrl() {
+    navigator.clipboard.writeText(ICS_FEED).then(() => {
+      const btn = document.getElementById('copy-url-btn');
+      btn.textContent = '✓ Skopiowano';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Kopiuj'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // KEYBOARD: ESC closes modals
+  // ════════════════════════════════════════════════════════════════
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeEventModal(); closeImportModal(); }
+  });
+
+  // ════════════════════════════════════════════════════════════════
+  // BOOT
+  // ════════════════════════════════════════════════════════════════
+  loadEvents();
   </script>
 </body>
 </html>
