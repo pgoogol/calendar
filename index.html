@@ -15,6 +15,8 @@
       --darker: #0a0909;
       --cream:  #f5f0e8;
       --muted:  #7a6f65;
+      --card-bg:#161210;
+      --border: rgba(255,255,255,.07);
     }
 
     body {
@@ -29,9 +31,7 @@
       content: '';
       position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: .5;
+      pointer-events: none; z-index: 0; opacity: .5;
     }
 
     header {
@@ -41,12 +41,10 @@
       border-bottom: 1px solid rgba(255,255,255,.07);
       overflow: hidden;
     }
-
     header::after {
       content: '';
       position: absolute;
-      bottom: -80px; left: 50%;
-      transform: translateX(-50%);
+      bottom: -80px; left: 50%; transform: translateX(-50%);
       width: 500px; height: 160px;
       background: radial-gradient(ellipse, rgba(192,57,43,.3) 0%, transparent 70%);
       pointer-events: none;
@@ -54,159 +52,176 @@
 
     .tag {
       display: inline-block;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .18em;
-      text-transform: uppercase;
+      font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase;
       color: var(--gold);
       border: 1px solid rgba(232,160,32,.35);
-      padding: 4px 14px;
-      border-radius: 100px;
-      margin-bottom: 20px;
+      padding: 4px 14px; border-radius: 100px; margin-bottom: 20px;
     }
 
     h1 {
       font-family: 'Playfair Display', serif;
       font-size: clamp(2.4rem, 8vw, 5rem);
-      line-height: 1.05;
-      letter-spacing: -.02em;
+      line-height: 1.05; letter-spacing: -.02em;
     }
-
-    h1 em {
-      font-style: italic;
-      color: var(--gold);
-    }
+    h1 em { font-style: italic; color: var(--gold); }
 
     .subtitle {
-      margin-top: 14px;
-      font-size: .95rem;
-      font-weight: 300;
-      color: var(--muted);
-      letter-spacing: .04em;
+      margin-top: 14px; font-size: .95rem; font-weight: 300;
+      color: var(--muted); letter-spacing: .04em;
     }
 
     .subscribe-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 32px;
-      padding: 12px 28px;
-      background: var(--red);
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .9rem;
-      font-weight: 500;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background .2s, transform .15s;
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 32px; padding: 12px 28px;
+      background: var(--red); color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500;
+      border: none; border-radius: 6px; cursor: pointer;
+      text-decoration: none; transition: background .2s, transform .15s;
     }
     .subscribe-btn:hover { background: #a93226; transform: translateY(-1px); }
 
     .filters {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 32px 24px 0;
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 10px; padding: 32px 24px 0;
     }
 
     .pill {
-      padding: 7px 18px;
-      border-radius: 100px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: transparent;
-      color: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      font-size: .82rem;
-      font-weight: 400;
-      letter-spacing: .04em;
-      cursor: pointer;
-      transition: all .2s;
+      padding: 7px 18px; border-radius: 100px;
+      border: 1px solid rgba(255,255,255,.12); background: transparent;
+      color: var(--cream); font-family: 'DM Sans', sans-serif;
+      font-size: .82rem; font-weight: 400; letter-spacing: .04em;
+      cursor: pointer; transition: all .2s;
     }
     .pill.active, .pill:hover { background: var(--red); border-color: var(--red); color: #fff; }
-    .pill.bachata.active      { background: #1a6b8a; border-color: #1a6b8a; }
-    .pill.kizomba.active      { background: #5b2d8e; border-color: #5b2d8e; }
+    .pill[data-filter="bachata"].active  { background: #1a6b8a; border-color: #1a6b8a; }
+    .pill[data-filter="warsztaty"].active{ background: #2d7a3a; border-color: #2d7a3a; }
+    .pill[data-filter="festiwale"].active{ background: #5b2d8e; border-color: #5b2d8e; }
+
+    .events-section {
+      max-width: 980px; margin: 36px auto 0; padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: .75rem; font-weight: 500; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px; margin-bottom: 48px; min-height: 80px;
+    }
+
+    .loading-row {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--muted); font-size: .85rem;
+      grid-column: 1 / -1;
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.1);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-msg { grid-column: 1 / -1; color: var(--muted); font-size: .85rem; }
+
+    .event-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+      position: relative;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+    }
+    .event-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      opacity: 0; transition: opacity .2s;
+    }
+    .event-card:hover { border-color: rgba(255,255,255,.16); transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+    .event-card:hover::before { opacity: 1; }
+    .event-card.hidden { display: none; }
+
+    .event-card[data-type="salsa"]::before    { background: var(--red); }
+    .event-card[data-type="bachata"]::before  { background: #1a6b8a; }
+    .event-card[data-type="warsztaty"]::before{ background: #2d7a3a; }
+    .event-card[data-type="festiwale"]::before{ background: #5b2d8e; }
+
+    .card-top {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .card-day-block { min-width: 36px; text-align: center; }
+    .card-day-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 700; line-height: 1; color: var(--cream);
+    }
+    .card-day-name { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .card-divider { width: 1px; height: 28px; background: var(--border); }
+    .card-time { font-size: .78rem; font-weight: 500; color: #a09080; }
+    .card-dot { margin-left: auto; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .event-card[data-type="salsa"]    .card-dot { background: var(--red); box-shadow: 0 0 8px rgba(192,57,43,.5); }
+    .event-card[data-type="bachata"]  .card-dot { background: #1a6b8a; box-shadow: 0 0 8px rgba(26,107,138,.5); }
+    .event-card[data-type="warsztaty"].card-dot { background: #2d7a3a; box-shadow: 0 0 8px rgba(45,122,58,.5); }
+    .event-card[data-type="festiwale"].card-dot { background: #5b2d8e; box-shadow: 0 0 8px rgba(91,45,142,.5); }
+
+    .card-body { padding: 14px 16px 16px; }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 700; line-height: 1.25;
+      color: var(--cream); margin-bottom: 6px;
+    }
+    .card-location { font-size: .73rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+    .card-badge {
+      display: inline-block; margin-top: 10px;
+      font-size: .63rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 3px;
+    }
+    .event-card[data-type="salsa"]    .card-badge { background: rgba(192,57,43,.18); color: #e07068; }
+    .event-card[data-type="bachata"]  .card-badge { background: rgba(26,107,138,.18); color: #5baec8; }
+    .event-card[data-type="warsztaty"].card-badge { background: rgba(45,122,58,.18);  color: #5cac6a; }
+    .event-card[data-type="festiwale"].card-badge { background: rgba(91,45,142,.18);  color: #b07ac8; }
 
     .calendar-section {
-      position: relative;
-      max-width: 980px;
-      margin: 36px auto 0;
-      padding: 0 20px 60px;
+      max-width: 980px; margin: 0 auto; padding: 0 20px 60px;
     }
+    .cal-section-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+    }
+    .cal-section-header .section-title { margin-bottom: 0; }
+    .live-badge { display: flex; align-items: center; gap: 6px; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf6e; box-shadow: 0 0 8px #4caf6e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
     .calendar-frame {
-      background: #1a1716;
+      background: #fff;
       border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      overflow: hidden;
+      border-radius: 12px; overflow: hidden;
       box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
     }
+    .calendar-frame iframe { width: 100%; height: 600px; border: none; display: block; }
 
-    .cal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.07);
-      background: #141312;
-    }
-    .cal-header-title {
-      font-size: .78rem;
-      font-weight: 500;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .cal-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--red);
-      box-shadow: 0 0 8px var(--red);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
-
-    /* Google Calendar embed — inverted for dark mode */
-    .calendar-frame iframe {
-      width: 100%;
-      height: 600px;
-      border: none;
-      display: block;
-      filter: invert(1) hue-rotate(180deg) saturate(.85) brightness(.92);
-    }
-
-    .cal-note {
-      text-align: center;
-      margin-top: 18px;
-      font-size: .78rem;
-      color: var(--muted);
-    }
+    .cal-note { text-align: center; margin-top: 18px; font-size: .78rem; color: var(--muted); }
     .cal-note a { color: var(--gold); text-decoration: none; }
     .cal-note a:hover { text-decoration: underline; }
 
     footer {
       border-top: 1px solid rgba(255,255,255,.06);
-      padding: 28px 24px;
-      text-align: center;
-      font-size: .78rem;
-      color: #3d3630;
-      letter-spacing: .04em;
+      padding: 28px 24px; text-align: center;
+      font-size: .78rem; color: #3d3630; letter-spacing: .04em;
     }
 
     .deco {
-      position: fixed;
-      right: -60px; top: 30%;
-      font-family: 'Playfair Display', serif;
-      font-size: 28vw;
-      font-style: italic;
-      color: rgba(192,57,43,.04);
-      pointer-events: none;
-      user-select: none;
-      line-height: 1;
-      z-index: 0;
+      position: fixed; right: -60px; top: 30%;
+      font-family: 'Playfair Display', serif; font-size: 28vw; font-style: italic;
+      color: rgba(192,57,43,.04); pointer-events: none; user-select: none; line-height: 1; z-index: 0;
     }
+
+    @media(max-width:600px){ .events-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -215,7 +230,7 @@
 
   <header>
     <div class="tag">📍Białystok 2026</div>
-    <h1>Sabor Latino<br><em>Salsa & Bachata</em></h1>
+    <h1>Sabor Latino<br><em>Salsa &amp; Bachata</em></h1>
     <p class="subtitle">Wszystkie eventy · warsztaty · potańcówki · festiwale</p>
     <a class="subscribe-btn" href="#">
       <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -226,50 +241,202 @@
   </header>
 
   <div class="filters">
-    <button class="pill active">Wszystkie</button>
-    <button class="pill salsa">Salsa</button>
-    <button class="pill bachata">Bachata</button>
-    <button class="pill">Warsztaty</button>
-    <button class="pill">Festiwale</button>
-    <button class="pill">Imprezy</button>
+    <button class="pill active" data-filter="all">Wszystkie</button>
+    <button class="pill" data-filter="salsa">Salsa</button>
+    <button class="pill" data-filter="bachata">Bachata</button>
+    <button class="pill" data-filter="warsztaty">Warsztaty</button>
+    <button class="pill" data-filter="festiwale">Festiwale</button>
+  </div>
+
+  <div class="events-section">
+    <div class="section-title">Nadchodzące eventy</div>
+    <div class="events-grid" id="events-grid">
+      <div class="loading-row"><div class="spinner"></div> Ładowanie eventów…</div>
+    </div>
   </div>
 
   <div class="calendar-section">
-    <div class="calendar-frame">
-      <div class="cal-header">
-        <span class="cal-header-title">Kalendarz eventów</span>
-        <span class="cal-dot"></span>
-      </div>
-
-      <!--
-        WKLEJ TUTAJ iframe z Google Calendar:
-        Ustawienia kalendarza → "Zintegruj kalendarz" → skopiuj embed
-      <iframe
-        src="https://calendar.google.com/calendar/embed?src=459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com&ctz=Europe%2FWarsaw&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&mode=MONTH"
-        frameborder="0"
-        scrolling="no">
-      </iframe>
-
-      -->
-      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FWarsaw&showPrint=0&showTitle=0&showCalendars=0&src=NDU5YzdhYmE5YmIwNmZiOWViZTgyOWNlMGVjNTdlMjBkOWIwMWVmZDZiM2U1YzU4NmE5ODFmOTdmMTcwN2JiOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=NGJjZmQ5YTdhYzI3MGZjMzI2N2I3MGVjNzkzN2MyM2I4YjFmNThiNTRlN2I0NGNkNjk0MmZmYmI3MGU1M2E0OUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=NWRjODA1YjZhNzAzNjFlZTI5MjEzZTMxN2Y4NWY1MDBiZWE2MzM0YWFlMjRiM2E1OWY2NjdjNzFjYWYwYjllMEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%237986cb&color=%23d50000&color=%237cb342" style="border-width:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    <div class="cal-section-header">
+      <div class="section-title">Pełny kalendarz</div>
+      <div class="live-badge"><span class="live-dot"></span> Aktualizowany na bieżąco</div>
     </div>
-
+    <div class="calendar-frame">
+      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FWarsaw&showPrint=0&showTitle=0&showCalendars=0&src=NDU5YzdhYmE5YmIwNmZiOWViZTgyOWNlMGVjNTdlMjBkOWIwMWVmZDZiM2U1YzU4NmE5ODFmOTdmMTcwN2JiOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=NGJjZmQ5YTdhYzI3MGZjMzI2N2I3MGVjNzkzN2MyM2I4YjFmNThiNTRlN2I0NGNkNjk0MmZmYmI3MGU1M2E0OUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=NWRjODA1YjZhNzAzNjFlZTI5MjEzZTMxN2Y4NWY1MDBiZWE2MzM0YWFlMjRiM2E1OWY2NjdjNzFjYWYwYjllMEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%237986cb&color=%23d50000&color=%237cb342"
+        frameborder="0" scrolling="no"></iframe>
+    </div>
     <p class="cal-note">
       Brakuje eventu? <a href="mailto:ty@example.com">Napisz do mnie</a> lub znajdź mnie na FB.
     </p>
   </div>
 
-  <footer>
-    Zrobione z ❤️ dla salsero community · Białystok
-  </footer>
+  <footer>Zrobione z ❤️ dla salsero community · Białystok</footer>
 
   <script>
+    // Publiczne URL-e iCal Twoich kalendarzy (bez żadnego klucza API)
+    const ICS_URLS = [
+      'https://calendar.google.com/calendar/ical/459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com/public/basic.ics',
+      'https://calendar.google.com/calendar/ical/4bcfd9a7ac270fc3267b70ec7937c23b8b1f58b54e7b44cd6942ffbb70e53a49%40group.calendar.google.com/public/basic.ics',
+      'https://calendar.google.com/calendar/ical/5dc805b6a70361ee29213e317f85f500bea6334aae24b3a59f667c71caf0b9e0%40group.calendar.google.com/public/basic.ics',
+    ];
+
+    // CORS proxy — potrzebny bo przeglądarka blokuje bezpośredni fetch do calendar.google.com
+    const PROXY = 'https://corsproxy.io/?';
+
+    const DAYS_PL   = ['Nd','Pn','Wt','Śr','Cz','Pt','Sb'];
+    const MONTHS_PL = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
+
+    // ── Parsowanie iCal ──────────────────────────────────────────────────────
+    function parseIcs(text) {
+      const events = [];
+      const blocks = text.split('BEGIN:VEVENT').slice(1);
+
+      for (const block of blocks) {
+        const get = (key) => {
+          // obsługa złamanych linii (RFC 5545 line folding)
+          const unfolded = block.replace(/\r?\n[ \t]/g, '');
+          const m = unfolded.match(new RegExp(`^${key}[^:]*:(.+)$`, 'm'));
+          return m ? m[1].trim() : '';
+        };
+
+        const rawStart = get('DTSTART');
+        const rawEnd   = get('DTEND');
+        if (!rawStart) continue;
+
+        events.push({
+          uid:      get('UID'),
+          summary:  unescape(get('SUMMARY')),
+          location: unescape(get('LOCATION')),
+          start:    parseIcsDate(rawStart),
+          end:      parseIcsDate(rawEnd),
+          allDay:   !rawStart.includes('T'),
+        });
+      }
+      return events;
+    }
+
+    function unescape(s) {
+      return s.replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
+    }
+
+    function parseIcsDate(raw) {
+      // Formaty: 20260509T190000Z  lub  20260509T190000  lub  20260509
+      const s = raw.replace(/[TZ]/g, s => s === 'T' ? '-' : '').trim();
+      if (s.length === 8) {
+        // data bez czasu
+        const y = s.slice(0,4), mo = s.slice(4,6), d = s.slice(6,8);
+        return new Date(`${y}-${mo}-${d}`);
+      }
+      // z czasem — traktuj jako lokalne jeśli brak Z
+      const y  = s.slice(0,4), mo = s.slice(4,6), d  = s.slice(6,8);
+      const hh = s.slice(9,11), mm = s.slice(11,13), ss = s.slice(13,15) || '00';
+      if (raw.endsWith('Z')) return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}Z`);
+      return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}`);
+    }
+
+    // ── Kategoryzacja ────────────────────────────────────────────────────────
+    function detectType(summary) {
+      const t = (summary || '').toLowerCase();
+      if (/festiwal|festival|congres/.test(t))        return 'festiwale';
+      if (/warsztat|kurs|lekcj|class|workshop/.test(t)) return 'warsztaty';
+      if (/bachata/.test(t))                            return 'bachata';
+      return 'salsa';
+    }
+
+    // ── Renderowanie karty ───────────────────────────────────────────────────
+    function makeCard(ev) {
+      const type     = detectType(ev.summary);
+      const d        = ev.start;
+      const dayNum   = String(d.getDate()).padStart(2, '0');
+      const dayName  = DAYS_PL[d.getDay()];
+      const month    = MONTHS_PL[d.getMonth()];
+      const timeStr  = ev.allDay ? 'Cały dzień'
+        : d.toLocaleTimeString('pl-PL', { hour:'2-digit', minute:'2-digit' });
+      const location = ev.location ? ev.location.split(',')[0] : '';
+      const labels   = { salsa:'Salsa', bachata:'Bachata', warsztaty:'Warsztaty', festiwale:'Festiwale' };
+      const pinSvg   = `<svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>`;
+
+      const card = document.createElement('div');
+      card.className  = 'event-card';
+      card.dataset.type = type;
+      card.innerHTML  = `
+        <div class="card-top">
+          <div class="card-day-block">
+            <div class="card-day-num">${dayNum}</div>
+            <div class="card-day-name">${dayName} · ${month}</div>
+          </div>
+          <div class="card-divider"></div>
+          <div class="card-time">${timeStr}</div>
+          <div class="card-dot"></div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">${ev.summary || 'Bez nazwy'}</div>
+          ${location ? `<div class="card-location">${pinSvg}${location}</div>` : ''}
+          <span class="card-badge">${labels[type]}</span>
+        </div>`;
+      return card;
+    }
+
+    // ── Główna logika ────────────────────────────────────────────────────────
+    async function loadEvents() {
+      const grid = document.getElementById('events-grid');
+      const now  = new Date();
+      const max  = new Date(now.getTime() + 60 * 24 * 3600 * 1000);
+
+      try {
+        const texts = await Promise.all(
+          ICS_URLS.map(url =>
+            fetch(PROXY + encodeURIComponent(url)).then(r => {
+              if (!r.ok) throw new Error(`HTTP ${r.status}`);
+              return r.text();
+            })
+          )
+        );
+
+        const allEvents = texts.flatMap(parseIcs);
+
+        // odfiltruj przeszłe i za odległe, posortuj, deduplikuj
+        const seen = new Set();
+        const upcoming = allEvents
+          .filter(ev => ev.start >= now && ev.start <= max)
+          .sort((a, b) => a.start - b.start)
+          .filter(ev => { if (seen.has(ev.uid)) return false; seen.add(ev.uid); return true; })
+          .slice(0, 12);
+
+        grid.innerHTML = '';
+
+        if (!upcoming.length) {
+          grid.innerHTML = '<div class="empty-msg">Brak nadchodzących eventów w ciągu najbliższych 60 dni.</div>';
+          return;
+        }
+
+        upcoming.forEach(ev => grid.appendChild(makeCard(ev)));
+        applyFilter('all');
+
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = `<div class="empty-msg">Nie udało się załadować eventów (${err.message}). Upewnij się, że kalendarze są publiczne.</div>`;
+      }
+    }
+
+    // ── Filtry ───────────────────────────────────────────────────────────────
+    function applyFilter(filter) {
+      document.querySelectorAll('.event-card').forEach(c => {
+        c.classList.toggle('hidden', filter !== 'all' && c.dataset.type !== filter);
+      });
+    }
+
     document.querySelectorAll('.pill').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        applyFilter(btn.dataset.filter);
       });
     });
+
+    loadEvents();
   </script>
 </body>
 </html>
