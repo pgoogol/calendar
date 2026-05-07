@@ -690,7 +690,7 @@
 
     if (wDayKey(ev.start) === wDayKey(ev.end)) {
       // Same day: show date once, then "19:00 – 22:00"
-      return `<strong>${startFull}&nbsp;–&nbsp;${eTime}</span>`;
+      return `<strong>${startFull}&nbsp;${sTime}&nbsp;–&nbsp;${eTime}</span>`;
     }
     // Spans midnight / multiple days
     return `<strong>${startFull},&nbsp;${sTime}&nbsp;–&nbsp;${wFullDate(ev.end)},&nbsp;${eTime}</span>`;
