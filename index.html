@@ -463,8 +463,7 @@
               <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
             <div>
-              <strong id="m-date"></strong>
-              <span id="m-time" style="font-size:.82rem;color:#a09080"></span>
+            <div id="m-datetime" style="line-height:1.55"></div>
             </div>
           </div>
 
@@ -662,6 +661,40 @@
     return `${day} ${wMonthFull(date)} ${year} (${wDayName(date)})`;
   }
 
+  // Returns a "YYYY-MM-DD" key in Warsaw timezone for same-day comparison
+  function wDayKey(date) {
+    return new Intl.DateTimeFormat('en-CA', {timeZone: TZ}).format(date); // en-CA gives YYYY-MM-DD
+  }
+
+  // Builds the full human-readable date+time range string for the modal
+  function formatEventDateTime(ev) {
+    const startFull = wFullDate(ev.start);
+
+    if (ev.allDay) {
+      if (!ev.end) return `<strong>${startFull}</strong>`;
+      // iCal DTEND for all-day is exclusive → subtract 1 day to get last inclusive day
+      const endInclusive = new Date(ev.end.getTime() - 24 * 3600 * 1000);
+      if (wDayKey(ev.start) === wDayKey(endInclusive)) {
+        return `<strong>${startFull}</strong>`;
+      }
+      return `<strong>${startFull}</strong><br><span style="color:#a09080;font-size:.82rem">–&nbsp;${wFullDate(endInclusive)}</span>`;
+    }
+
+    // Timed event
+    const sTime = wTime(ev.start);
+    if (!ev.end) {
+      return `<strong>${startFull}</strong><br><span style="color:#a09080;font-size:.82rem">${sTime}</span>`;
+    }
+    const eTime = wTime(ev.end);
+
+    if (wDayKey(ev.start) === wDayKey(ev.end)) {
+      // Same day: show date once, then "19:00 – 22:00"
+      return `<strong>${startFull}</strong><br><span style="color:#a09080;font-size:.82rem">${sTime}&nbsp;–&nbsp;${eTime}</span>`;
+    }
+    // Spans midnight / multiple days
+    return `<strong>${startFull},&nbsp;${sTime}</strong><br><span style="color:#a09080;font-size:.82rem">–&nbsp;${wFullDate(ev.end)},&nbsp;${eTime}</span>`;
+  }
+
   // ════════════════════════════════════════════════
   // MULTI-CATEGORY — returns ordered array
   // Primary (first match) drives accent colour
@@ -687,41 +720,20 @@
   const KNOWN_CITIES = [
     'Białystok','Warszawa','Kraków','Gdańsk','Gdynia','Poznań','Wrocław','Łódź',
     'Katowice','Lublin','Bydgoszcz','Szczecin','Rzeszów','Olsztyn','Toruń',
-    'Kielce','Gorzów','Zielona Góra','Opole','Częstochowa','Radom','Sosnowiec',
-    'Toruń','Gliwice','Zabrze','Bytom','Bielsko-Biała','Gdańsk','Gdynia',
+    'Kielce','Gorzów','Zielona Góra','Opole','Częstochowa',
   ];
-
-  // Terms that are NOT city names – skip in fallback detection
-  const SKIP_CITY = new Set([
-    'polska','poland','pl','niemcy','germany','czechy','czech republic',
-    'slowacja','slovakia','litwa','lithuania','ukraina','ukraine','russia',
-    'europe','europa','kraj','country','polska','mazowieckie','podlaskie',
-    'malopolskie','dolnoslaskie','slaskie','wielkopolskie','pomorskie',
-    'warminsko-mazurskie','lubelskie','podkarpackie','swietokrzyskie',
-    'lodzkie','lubuskie','opolskie','kujawsko-pomorskie',
-  ]);
 
   function detectCity(location) {
     if (!location) return null;
-
-    // 1. Priority: check against known cities list (normalised match)
     const locNorm = normalisePL(location);
     for (const c of KNOWN_CITIES) {
       if (locNorm.includes(normalisePL(c))) return c;
     }
-
-    // 2. Fallback: scan comma-segments from the end; skip known non-city strings
-    const parts = location.split(',').map(p => p.trim()).filter(Boolean).reverse();
-    for (const part of parts) {
-      if (!part || part.length < 2 || part.length > 50) continue;
-      if (/\d/.test(part)) continue;                        // postal code / house number
-      const pNorm = normalisePL(part);
-      if (SKIP_CITY.has(pNorm)) continue;                   // country / voivodeship
-      if (/^(ul|al|os|pl|str|ave|blvd|rd|st)\b/i.test(part)) continue; // street prefix
-      // Looks like a city name – capitalise each word
-      return part.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const parts = location.split(',').map(p => p.trim()).filter(Boolean);
+    const last  = parts[parts.length - 1];
+    if (last && last.length > 2 && last.length < 40 && !/\d/.test(last)) {
+      return last.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
     }
-
     return null;
   }
 
@@ -881,17 +893,8 @@
     // Title
     document.getElementById('m-title').textContent = ev.summary || 'Bez nazwy';
 
-    // Date (first line: full date, always Warsaw timezone)
-    const d = ev.start;
-    document.getElementById('m-date').textContent = wFullDate(d);
-
-    // Time (second line: start – end, Warsaw timezone)
-    let timeStr = 'Cały dzień';
-    if (!ev.allDay) {
-      const s = wTime(d);
-      timeStr  = ev.end ? `${s} – ${wTime(ev.end)}` : s;
-    }
-    document.getElementById('m-time').textContent = timeStr;
+    // Date + time range (single element, handles same-day / multi-day / cross-midnight)
+    document.getElementById('m-datetime').innerHTML = formatEventDateTime(ev);
 
     // Location
     const locRow = document.getElementById('m-location-row');
