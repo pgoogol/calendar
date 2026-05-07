@@ -543,10 +543,7 @@
   ];
   const PROXY = 'https://corsproxy.io/?';
 
-  const DAYS_PL        = ['Nd','Pn','Wt','Śr','Cz','Pt','Sb'];
-  const MONTHS_PL      = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'];
-  const MONTH_NAMES_PL = ['Stycznia','Lutego','Marca','Kwietnia','Maja','Czerwca',
-                          'Lipca','Sierpnia','Września','Października','Listopada','Grudnia'];
+  const TZ_DISPLAY = 'Europe/Warsaw'; // kept for reference; use wTime/wFullDate helpers
 
   // ════════════════════════════════════════════════
   // NORMALISE Polish diacritics
@@ -601,18 +598,68 @@
                     .replace(/\\n/g,'\n').replace(/\\\\/g,'\\').trim();
   }
 
+  // ── Warsaw timezone offset (+1 CET / +2 CEST) ──────────────────
+  function warsawOffsetH(year, month0, day) {
+    // month0 = 0-indexed. DST: last Sunday of March → last Sunday of October.
+    if (month0 > 2 && month0 < 9) return 2;   // Apr–Sep always CEST
+    if (month0 < 2 || month0 > 9) return 1;   // Nov–Feb always CET
+    const lastSun = (() => {
+      const last = new Date(Date.UTC(year, month0 + 1, 0));
+      return last.getUTCDate() - last.getUTCDay();
+    })();
+    if (month0 === 2) return day >= lastSun ? 2 : 1;  // March: starts
+    if (month0 === 9) return day <  lastSun ? 2 : 1;  // October: ends
+    return 1;
+  }
+
   function parseIcsDate(raw, allDay) {
     const val = raw.includes(':') ? raw.split(':').pop() : raw;
     const v   = val.replace(/[^0-9TZ]/g,'');
 
     if (allDay || /^\d{8}$/.test(v)) {
-      const y = v.slice(0,4), mo = v.slice(4,6), d = v.slice(6,8);
-      return new Date(`${y}-${mo}-${d}T00:00:00`);
+      // All-day: store as UTC midnight so date never shifts
+      return new Date(Date.UTC(+v.slice(0,4), +v.slice(4,6)-1, +v.slice(6,8)));
     }
-    const y  = v.slice(0,4), mo = v.slice(4,6), d  = v.slice(6,8);
-    const hh = v.slice(9,11), mm = v.slice(11,13), ss = v.slice(13,15) || '00';
-    if (v.endsWith('Z')) return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}Z`);
-    return new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}`);
+    const y  = +v.slice(0,4), mo = +v.slice(4,6)-1, d  = +v.slice(6,8);
+    const hh = +v.slice(9,11), mm = +v.slice(11,13), ss = +(v.slice(13,15)||'0');
+
+    if (v.endsWith('Z')) {
+      // Already UTC
+      return new Date(Date.UTC(y, mo, d, hh, mm, ss));
+    }
+    // TZID=Europe/Warsaw (or unspecified local) → convert to UTC explicitly
+    const offset = warsawOffsetH(y, mo, d);
+    return new Date(Date.UTC(y, mo, d, hh - offset, mm, ss));
+  }
+
+  // ── Warsaw-aware display helpers ─────────────────────────────────
+  const TZ = 'Europe/Warsaw';
+
+  function wTime(date) {
+    return date.toLocaleTimeString('pl-PL', {hour:'2-digit', minute:'2-digit', timeZone: TZ});
+  }
+  function wDayNum(date) {
+    return new Intl.DateTimeFormat('pl-PL', {timeZone: TZ, day: '2-digit'}).format(date);
+  }
+  function wDayName(date) {
+    const en = new Intl.DateTimeFormat('en', {timeZone: TZ, weekday: 'short'}).format(date);
+    return {Sun:'Nd',Mon:'Pn',Tue:'Wt',Wed:'Śr',Thu:'Cz',Fri:'Pt',Sat:'Sb'}[en] || en;
+  }
+  function wMonthShort(date) {
+    const en = new Intl.DateTimeFormat('en', {timeZone: TZ, month: 'short'}).format(date);
+    return {Jan:'Sty',Feb:'Lut',Mar:'Mar',Apr:'Kwi',May:'Maj',Jun:'Cze',
+            Jul:'Lip',Aug:'Sie',Sep:'Wrz',Oct:'Paź',Nov:'Lis',Dec:'Gru'}[en] || en;
+  }
+  function wMonthFull(date) {
+    const en = new Intl.DateTimeFormat('en', {timeZone: TZ, month: 'long'}).format(date);
+    return {January:'Stycznia',February:'Lutego',March:'Marca',April:'Kwietnia',
+            May:'Maja',June:'Czerwca',July:'Lipca',August:'Sierpnia',
+            September:'Września',October:'Października',November:'Listopada',December:'Grudnia'}[en] || en;
+  }
+  function wFullDate(date) {
+    const day  = new Intl.DateTimeFormat('pl-PL', {timeZone: TZ, day: 'numeric'}).format(date);
+    const year = new Intl.DateTimeFormat('pl-PL', {timeZone: TZ, year: 'numeric'}).format(date);
+    return `${day} ${wMonthFull(date)} ${year} (${wDayName(date)})`;
   }
 
   // ════════════════════════════════════════════════
@@ -640,19 +687,41 @@
   const KNOWN_CITIES = [
     'Białystok','Warszawa','Kraków','Gdańsk','Gdynia','Poznań','Wrocław','Łódź',
     'Katowice','Lublin','Bydgoszcz','Szczecin','Rzeszów','Olsztyn','Toruń',
-    'Kielce','Gorzów','Zielona Góra','Opole','Częstochowa',
+    'Kielce','Gorzów','Zielona Góra','Opole','Częstochowa','Radom','Sosnowiec',
+    'Toruń','Gliwice','Zabrze','Bytom','Bielsko-Biała','Gdańsk','Gdynia',
   ];
+
+  // Terms that are NOT city names – skip in fallback detection
+  const SKIP_CITY = new Set([
+    'polska','poland','pl','niemcy','germany','czechy','czech republic',
+    'slowacja','slovakia','litwa','lithuania','ukraina','ukraine','russia',
+    'europe','europa','kraj','country','polska','mazowieckie','podlaskie',
+    'malopolskie','dolnoslaskie','slaskie','wielkopolskie','pomorskie',
+    'warminsko-mazurskie','lubelskie','podkarpackie','swietokrzyskie',
+    'lodzkie','lubuskie','opolskie','kujawsko-pomorskie',
+  ]);
+
   function detectCity(location) {
     if (!location) return null;
-    const loc = location.toLowerCase();
+
+    // 1. Priority: check against known cities list (normalised match)
+    const locNorm = normalisePL(location);
     for (const c of KNOWN_CITIES) {
-      if (loc.includes(c.toLowerCase())) return c;
+      if (locNorm.includes(normalisePL(c))) return c;
     }
-    const parts = location.split(',').map(p => p.trim()).filter(Boolean);
-    const last  = parts[parts.length - 1];
-    if (last && last.length > 2 && last.length < 40 && !/\d/.test(last)) {
-      return last.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+
+    // 2. Fallback: scan comma-segments from the end; skip known non-city strings
+    const parts = location.split(',').map(p => p.trim()).filter(Boolean).reverse();
+    for (const part of parts) {
+      if (!part || part.length < 2 || part.length > 50) continue;
+      if (/\d/.test(part)) continue;                        // postal code / house number
+      const pNorm = normalisePL(part);
+      if (SKIP_CITY.has(pNorm)) continue;                   // country / voivodeship
+      if (/^(ul|al|os|pl|str|ave|blvd|rd|st)\b/i.test(part)) continue; // street prefix
+      // Looks like a city name – capitalise each word
+      return part.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     }
+
     return null;
   }
 
@@ -675,11 +744,10 @@
     const primary  = types[0];
     const city     = detectCity(ev.location);
     const d        = ev.start;
-    const dayNum   = String(d.getDate()).padStart(2,'0');
-    const dayName  = DAYS_PL[d.getDay()];
-    const month    = MONTHS_PL[d.getMonth()];
-    const timeStr  = ev.allDay ? 'Cały dzień'
-                   : d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+    const dayNum   = wDayNum(d);
+    const dayName  = wDayName(d);
+    const month    = wMonthShort(d);
+    const timeStr  = ev.allDay ? 'Cały dzień' : wTime(d);
     const location = ev.location ? ev.location.split(',')[0] : '';
     const pinSvg   = `<svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -813,17 +881,15 @@
     // Title
     document.getElementById('m-title').textContent = ev.summary || 'Bez nazwy';
 
-    // Date (first line: full date)
+    // Date (first line: full date, always Warsaw timezone)
     const d = ev.start;
-    document.getElementById('m-date').textContent =
-      `${d.getDate()} ${MONTH_NAMES_PL[d.getMonth()]} ${d.getFullYear()} (${DAYS_PL[d.getDay()]})`;
+    document.getElementById('m-date').textContent = wFullDate(d);
 
-    // Time (second line: start – end)
+    // Time (second line: start – end, Warsaw timezone)
     let timeStr = 'Cały dzień';
     if (!ev.allDay) {
-      const fmt = { hour: '2-digit', minute: '2-digit' };
-      const s   = d.toLocaleTimeString('pl-PL', fmt);
-      timeStr   = ev.end ? `${s} – ${ev.end.toLocaleTimeString('pl-PL', fmt)}` : s;
+      const s = wTime(d);
+      timeStr  = ev.end ? `${s} – ${wTime(ev.end)}` : s;
     }
     document.getElementById('m-time').textContent = timeStr;
 
