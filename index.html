@@ -184,6 +184,7 @@
       font-size: 1.7rem; font-weight: 700; line-height: 1; color: var(--cream);
     }
     .card-day-name { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .card-day-end  { font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 3px; opacity: .75; }
     .card-divider { width: 1px; height: 28px; background: var(--border); }
     .card-time { font-size: .78rem; font-weight: 500; color: #a09080; }
     .card-dot { margin-left: auto; width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -759,7 +760,25 @@
     const dayNum   = wDayNum(d);
     const dayName  = wDayName(d);
     const month    = wMonthShort(d);
-    const timeStr  = ev.allDay ? 'Cały dzień' : wTime(d);
+
+    // Time: show start–end on card (same as modal)
+    let timeStr;
+    if (ev.allDay) {
+      timeStr = 'Cały dzień';
+    } else {
+      timeStr = wTime(d);
+      if (ev.end) timeStr += ` – ${wTime(ev.end)}`;
+    }
+
+    // End-date line — shown only when end day differs from start day
+    let endLine = '';
+    if (ev.end) {
+      const endDate = ev.allDay ? new Date(ev.end.getTime() - 86400000) : ev.end;
+      if (wDayKey(d) !== wDayKey(endDate)) {
+        endLine = `<div class="card-day-end">– ${wDayNum(endDate)} · ${wDayName(endDate)} · ${wMonthShort(endDate)}</div>`;
+      }
+    }
+
     const location = ev.location ? ev.location.split(',')[0] : '';
     const pinSvg   = `<svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -776,6 +795,7 @@
         <div class="card-day-block">
           <div class="card-day-num">${dayNum}</div>
           <div class="card-day-name">${dayName} · ${month}</div>
+          ${endLine}
         </div>
         <div class="card-divider"></div>
         <div class="card-time">${timeStr}</div>
