@@ -76,8 +76,29 @@
       <div class="section-title">Pełny kalendarz</div>
       <div class="live-badge"><span class="live-dot"></span> Aktualizowany na bieżąco</div>
     </div>
-    <div class="calendar-frame">
-      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FWarsaw&showPrint=0&showCalendars=0&showTabs=0&showTitle=0&src=NDU5YzdhYmE5YmIwNmZiOWViZTgyOWNlMGVjNTdlMjBkOWIwMWVmZDZiM2U1YzU4NmE5ODFmOTdmMTcwN2JiOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23e63946" style="border-width:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>    </div>
+    <div class="calendar-frame" id="calendar-frame">
+      <div class="cal-toolbar">
+        <button class="cal-nav-btn" id="cal-prev" aria-label="Poprzedni miesiąc" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="cal-month-label" id="cal-month-label"></div>
+        <button class="cal-nav-btn" id="cal-next" aria-label="Następny miesiąc" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="cal-today-btn" id="cal-today" type="button">Dziś</button>
+      </div>
+      <div class="cal-weekdays" aria-hidden="true">
+        <div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>Sb</div><div class="cal-weekend">Nd</div>
+      </div>
+      <div class="cal-grid" id="cal-grid" role="grid"></div>
+      <div class="cal-legend">
+        <span class="cal-legend-item"><span class="cal-legend-dot" data-cat="salsa"></span>Salsa</span>
+        <span class="cal-legend-item"><span class="cal-legend-dot" data-cat="bachata"></span>Bachata</span>
+        <span class="cal-legend-item"><span class="cal-legend-dot" data-cat="warsztaty"></span>Warsztaty</span>
+        <span class="cal-legend-item"><span class="cal-legend-dot" data-cat="party"></span>Party</span>
+        <span class="cal-legend-item"><span class="cal-legend-dot" data-cat="festiwale"></span>Festiwale</span>
+      </div>
+    </div>
     <p class="cal-note">Brakuje eventu? <a href="mailto:ty@example.com">Napisz do mnie</a> lub znajdź mnie na FB.</p>
   </div>
 
