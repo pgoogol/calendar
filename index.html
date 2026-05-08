@@ -117,7 +117,7 @@
       pointer-events: none; z-index: 0; opacity: .7;
     }
 
-    /* Folk botanical background motif — top right */
+    /* Róża wycinankowa + papel picado fringe — top right */
     body::after {
       content: '';
       position: fixed; top: -80px; right: -80px;
@@ -129,27 +129,49 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* ── FOLK BORDER — pas łowicki + papel picado ── */
+    /* ── Sylwetka pary tańczącej salsa — fixed bottom-left ── */
+    .dancers {
+      position: fixed; bottom: -40px; left: -50px;
+      width: 340px; height: 400px;
+      background-color: var(--accent-warm);
+      -webkit-mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280'%3E%3Cg fill='black'%3E%3C!-- m%C4%99%C5%BCczyzna --%3E%3Ccircle cx='65' cy='32' r='13'/%3E%3Crect x='62' y='42' width='6' height='8'/%3E%3Cpath d='M50 50 L80 50 L78 130 L52 130 Z'/%3E%3Cpath d='M78 60 L130 50 Q135 53 132 58 L80 70 Z'/%3E%3Cpath d='M52 60 L25 95 Q20 100 24 103 L55 70 Z'/%3E%3Cpath d='M55 130 L40 210 L36 252 L50 252 L57 210 Z'/%3E%3Cpath d='M75 130 L88 210 L94 252 L80 252 L72 210 Z'/%3E%3C!-- kobieta --%3E%3Ccircle cx='150' cy='38' r='12'/%3E%3Cpath d='M150 28 Q142 14 134 18 Q140 28 145 30 Z'/%3E%3Crect x='148' y='47' width='5' height='6'/%3E%3Cpath d='M138 53 L162 53 L158 115 L140 115 Z'/%3E%3Cpath d='M160 60 L188 22 Q193 18 196 22 Q194 26 190 28 L165 65 Z'/%3E%3Cpath d='M138 60 L100 55 Q95 58 98 62 L138 70 Z'/%3E%3Cpath d='M138 115 Q118 150 108 205 Q130 200 145 205 Q165 200 182 210 Q176 150 162 115 Z'/%3E%3Cpath d='M150 200 L148 262 L156 262 L160 200 Z'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+              mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 280'%3E%3Cg fill='black'%3E%3Ccircle cx='65' cy='32' r='13'/%3E%3Crect x='62' y='42' width='6' height='8'/%3E%3Cpath d='M50 50 L80 50 L78 130 L52 130 Z'/%3E%3Cpath d='M78 60 L130 50 Q135 53 132 58 L80 70 Z'/%3E%3Cpath d='M52 60 L25 95 Q20 100 24 103 L55 70 Z'/%3E%3Cpath d='M55 130 L40 210 L36 252 L50 252 L57 210 Z'/%3E%3Cpath d='M75 130 L88 210 L94 252 L80 252 L72 210 Z'/%3E%3Ccircle cx='150' cy='38' r='12'/%3E%3Cpath d='M150 28 Q142 14 134 18 Q140 28 145 30 Z'/%3E%3Crect x='148' y='47' width='5' height='6'/%3E%3Cpath d='M138 53 L162 53 L158 115 L140 115 Z'/%3E%3Cpath d='M160 60 L188 22 Q193 18 196 22 Q194 26 190 28 L165 65 Z'/%3E%3Cpath d='M138 60 L100 55 Q95 58 98 62 L138 70 Z'/%3E%3Cpath d='M138 115 Q118 150 108 205 Q130 200 145 205 Q165 200 182 210 Q176 150 162 115 Z'/%3E%3Cpath d='M150 200 L148 262 L156 262 L160 200 Z'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+      opacity: 0.09;
+      pointer-events: none; z-index: 0;
+    }
+    @media(max-width:600px){ .dancers { width: 200px; height: 240px; opacity: 0.06; } }
+
+    /* ── Krzyż santería + maraca w prawym dolnym rogu — religijno-taneczny akcent ── */
+    .santeria-mark {
+      position: fixed; bottom: 12px; right: 12px;
+      width: 64px; height: 64px;
+      background-color: var(--secondary);
+      -webkit-mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg fill='black'%3E%3C!-- krzy%C5%BC %C5%9Bw. %C5%81azarza / Yoruba --%3E%3Crect x='30' y='6' width='4' height='40' rx='1'/%3E%3Crect x='18' y='18' width='28' height='4' rx='1'/%3E%3Ccircle cx='32' cy='20' r='2.5' fill='white'/%3E%3C!-- promienie --%3E%3Cpath d='M32 4 L33 1 L31 1 Z M22 8 L20 5 M42 8 L44 5 M14 22 L11 22 M50 22 L53 22'/%3E%3C!-- maraca pod krzy%C5%BCem --%3E%3Cellipse cx='24' cy='52' rx='3.5' ry='5'/%3E%3Crect x='23' y='56' width='2' height='6' rx='1'/%3E%3Cellipse cx='40' cy='54' rx='3.5' ry='5'/%3E%3Crect x='39' y='58' width='2' height='5' rx='1'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+              mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg fill='black'%3E%3Crect x='30' y='6' width='4' height='40' rx='1'/%3E%3Crect x='18' y='18' width='28' height='4' rx='1'/%3E%3Ccircle cx='32' cy='20' r='2.5' fill='white'/%3E%3Cpath d='M32 4 L33 1 L31 1 Z M22 8 L20 5 M42 8 L44 5 M14 22 L11 22 M50 22 L53 22'/%3E%3Cellipse cx='24' cy='52' rx='3.5' ry='5'/%3E%3Crect x='23' y='56' width='2' height='6' rx='1'/%3E%3Cellipse cx='40' cy='54' rx='3.5' ry='5'/%3E%3Crect x='39' y='58' width='2' height='5' rx='1'/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+      opacity: 0.32;
+      pointer-events: none; z-index: 0;
+      transition: opacity .3s;
+    }
+    .santeria-mark:hover { opacity: 0.5; }
+
+
+    /* ── FOLK BORDER TOP — kubański rytm: clave + maracas + palma + krzyż santería + hibiskus ── */
     .folk-border-top {
-      width: 100%; height: 22px; position: relative; overflow: hidden;
+      width: 100%; height: 28px; position: relative; overflow: hidden;
       background:
-        /* gwiazdki i romby papel picado — biało-czarne sylwetki */
-        url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 22' preserveAspectRatio='none'%3E%3Cg fill='rgba(255,255,255,0.55)'%3E%3Ccircle cx='10' cy='11' r='2.2'/%3E%3Cpath d='M40 4 L42 9 L47 9 L43 12.5 L45 17 L40 14 L35 17 L37 12.5 L33 9 L38 9 Z'/%3E%3Crect x='67' y='8' width='6' height='6' transform='rotate(45 70 11)'/%3E%3Cpath d='M100 6 Q103 7 102 11 Q103 15 100 16 Q97 15 98 11 Q97 7 100 6 Z'/%3E%3C/g%3E%3C/svg%3E") repeat-x center / 120px 100%,
-        /* pas łowicki: różnokolorowe paseczki o różnych szerokościach */
-        repeating-linear-gradient(
-          90deg,
-          var(--cat-salsa)      0   4px,
-          var(--primary)        4px 7px,
-          var(--cat-bachata)    7px 11px,
-          var(--text)           11px 13px,
-          var(--cat-warsztaty)  13px 17px,
-          var(--accent-warm)    17px 20px,
-          var(--cat-party)      20px 23px,
-          var(--secondary)      23px 28px,
-          var(--cat-festiwale)  28px 32px,
-          var(--primary)        32px 36px
-        );
-      opacity: .82;
+        linear-gradient(90deg,
+          var(--cat-salsa)      0%,
+          var(--primary)        16%,
+          var(--accent-warm)    33%,
+          var(--cat-festiwale)  50%,
+          var(--cat-bachata)    66%,
+          var(--cat-warsztaty)  82%,
+          var(--cat-party)      100%);
+      -webkit-mask:
+        url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 28' preserveAspectRatio='none'%3E%3Cg fill='black'%3E%3C!--clave 3-dot--%3E%3Ccircle cx='8' cy='14' r='2.6'/%3E%3Ccircle cx='20' cy='14' r='2.6'/%3E%3Ccircle cx='32' cy='14' r='2.6'/%3E%3C!--palm leaf--%3E%3Cpath d='M55 24 Q47 14 55 4 Q63 14 55 24 Z'/%3E%3Cpath d='M50 18 Q55 14 60 18 M48 14 Q55 12 62 14 M50 10 Q55 14 60 10' stroke='black' stroke-width='1.2' fill='none'/%3E%3C!--maracas pair--%3E%3Cellipse cx='82' cy='10' rx='3' ry='4'/%3E%3Crect x='81' y='13' width='2' height='8' rx='1'/%3E%3Cellipse cx='95' cy='17' rx='3' ry='4'/%3E%3Crect x='94' y='6' width='2' height='8' rx='1'/%3E%3C!--santeria cross with center dot--%3E%3Crect x='128.5' y='5' width='3' height='18' rx='.5'/%3E%3Crect x='122' y='12' width='16' height='3' rx='.5'/%3E%3Ccircle cx='130' cy='13.5' r='1.6' fill='white'/%3E%3C!--clave 2-dot--%3E%3Ccircle cx='158' cy='14' r='2.6'/%3E%3Ccircle cx='172' cy='14' r='2.6'/%3E%3C!--hibiscus 5 petals--%3E%3Cg transform='translate(205 14)'%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(72)'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(144)'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(216)'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(288)'/%3E%3Ccircle cx='0' cy='0' r='1.4' fill='white'/%3E%3C/g%3E%3C!--baseline thin underscore--%3E%3Crect x='0' y='25' width='240' height='1.2'/%3E%3C/g%3E%3C/svg%3E") repeat-x center / 240px 100%;
+              mask:
+        url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 28' preserveAspectRatio='none'%3E%3Cg fill='black'%3E%3Ccircle cx='8' cy='14' r='2.6'/%3E%3Ccircle cx='20' cy='14' r='2.6'/%3E%3Ccircle cx='32' cy='14' r='2.6'/%3E%3Cpath d='M55 24 Q47 14 55 4 Q63 14 55 24 Z'/%3E%3Cpath d='M50 18 Q55 14 60 18 M48 14 Q55 12 62 14 M50 10 Q55 14 60 10' stroke='black' stroke-width='1.2' fill='none'/%3E%3Cellipse cx='82' cy='10' rx='3' ry='4'/%3E%3Crect x='81' y='13' width='2' height='8' rx='1'/%3E%3Cellipse cx='95' cy='17' rx='3' ry='4'/%3E%3Crect x='94' y='6' width='2' height='8' rx='1'/%3E%3Crect x='128.5' y='5' width='3' height='18' rx='.5'/%3E%3Crect x='122' y='12' width='16' height='3' rx='.5'/%3E%3Ccircle cx='130' cy='13.5' r='1.6' fill='white'/%3E%3Ccircle cx='158' cy='14' r='2.6'/%3E%3Ccircle cx='172' cy='14' r='2.6'/%3E%3Cg transform='translate(205 14)'%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(72)'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(144)'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(216)'/%3E%3Cellipse cx='0' cy='-5' rx='2.2' ry='3.5' transform='rotate(288)'/%3E%3Ccircle cx='0' cy='0' r='1.4' fill='white'/%3E%3C/g%3E%3Crect x='0' y='25' width='240' height='1.2'/%3E%3C/g%3E%3C/svg%3E") repeat-x center / 240px 100%;
+      opacity: .92;
     }
 
     /* ── HEADER ── */
@@ -207,18 +229,33 @@
       position: relative; z-index: 1;
     }
 
-    /* Ornamental divider */
+    /* Ornamental divider — claves rhythm + maracas */
     .ornament {
       display: flex; align-items: center; justify-content: center;
       gap: 12px; margin: 18px auto 24px; width: fit-content;
       position: relative; z-index: 1;
     }
-    .ornament-line { width: 60px; height: 1px; background: rgba(var(--primary-rgb),.3); }
-    .ornament-diamond {
-      width: 7px; height: 7px; background: var(--amber);
-      transform: rotate(45deg); opacity: .7;
+    .ornament-line { width: 56px; height: 1px; background: rgba(var(--primary-rgb),.3); }
+    /* clave stick — drewniany patyczek rytmiczny */
+    .ornament-clave {
+      width: 16px; height: 4px; border-radius: 2px;
+      background: var(--secondary); opacity: .8;
+      position: relative;
     }
-    .ornament-dot { width: 3px; height: 3px; background: var(--crimson); border-radius: 50%; opacity: .6; }
+    .ornament-clave::before {
+      content: ''; position: absolute; left: 1px; top: -7px;
+      width: 16px; height: 4px; border-radius: 2px;
+      background: var(--secondary); opacity: .9;
+      transform: rotate(-12deg);
+    }
+    /* maraca — kuban instrument */
+    .ornament-maraca {
+      width: 18px; height: 24px;
+      background-color: var(--accent-warm);
+      -webkit-mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 24'%3E%3Cellipse cx='9' cy='8' rx='6' ry='7' fill='black'/%3E%3Crect x='8' y='14' width='2' height='9' rx='1' fill='black'/%3E%3Ccircle cx='9' cy='8' r='1.8' fill='white'/%3E%3Cpath d='M5 5 L13 5 M5 11 L13 11' stroke='white' stroke-width='.6'/%3E%3C/svg%3E") no-repeat center / contain;
+              mask: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 24'%3E%3Cellipse cx='9' cy='8' rx='6' ry='7' fill='black'/%3E%3Crect x='8' y='14' width='2' height='9' rx='1' fill='black'/%3E%3Ccircle cx='9' cy='8' r='1.8' fill='white'/%3E%3Cpath d='M5 5 L13 5 M5 11 L13 11' stroke='white' stroke-width='.6'/%3E%3C/svg%3E") no-repeat center / contain;
+      opacity: .85;
+    }
 
     .subscribe-btn {
       display: inline-flex; align-items: center; gap: 8px;
@@ -232,7 +269,7 @@
       position: relative; z-index: 1;
     }
     .subscribe-btn:hover {
-       background: rgba(var(--primary-rgb),.1); border-color: var(--amber); color: var(--straw);
+      background: rgba(var(--primary-rgb),.1); border-color: var(--amber); color: var(--straw);
       transform: translateY(-1px);
     }
 
@@ -253,7 +290,7 @@
       border-color: var(--amber);
       transform: translateY(-1px);
     }
-	.theme-toggle:focus-visible {
+    .theme-toggle:focus-visible {
       outline: 2px solid var(--amber); outline-offset: 2px;
     }
     .theme-toggle svg { width: 18px; height: 18px; display: block; }
@@ -371,7 +408,7 @@
 
     .card-top {
       padding: 14px 16px 12px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 12px;
+	        display: flex; align-items: center; gap: 12px;
       background: rgba(0,0,0,.15);
     }
     .card-day-block { min-width: 38px; text-align: center; }
@@ -626,9 +663,11 @@
 
   <div class="folk-border-top"></div>
   <div class="deco">S</div>
+  <div class="dancers" aria-hidden="true"></div>
+  <div class="santeria-mark" aria-hidden="true" title="Krzyż santería + maracas"></div>
 
   <header>
-  <button class="theme-toggle" id="theme-toggle" aria-label="Przełącz motyw" aria-pressed="false" type="button">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Przełącz motyw" aria-pressed="false" type="button">
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
@@ -641,11 +680,11 @@
     <h1>Sabor Latino<br><em>Salsa &amp; Bachata</em></h1>
     <p class="subtitle">Wszystkie eventy · warsztaty · potańcówki · festiwale</p>
     <div class="ornament">
-      <div class="ornament-dot"></div>
+      <div class="ornament-clave" aria-hidden="true"></div>
       <div class="ornament-line"></div>
-      <div class="ornament-diamond"></div>
+      <div class="ornament-maraca" aria-hidden="true"></div>
       <div class="ornament-line"></div>
-      <div class="ornament-dot"></div>
+      <div class="ornament-clave" aria-hidden="true"></div>
     </div>
     <button class="subscribe-btn" onclick="openImportModal()">
       <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -779,7 +818,7 @@
 
   <script>
   // ════════════════════════════════════════════════
-  // CONFIG
+    // CONFIG
   // ════════════════════════════════════════════════
   const ICS_URLS = [
     'https://calendar.google.com/calendar/ical/459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com/public/basic.ics',
@@ -1165,8 +1204,7 @@
     if (e.key === 'Escape') { closeEventModal(); closeImportModal(); }
   });
 
-
-// ════════════════════════════════════════════════
+  // ════════════════════════════════════════════════
   // THEME TOGGLE
   // ════════════════════════════════════════════════
   (function setupThemeToggle() {
