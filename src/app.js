@@ -217,13 +217,16 @@ function makeCard(ev) {
 }
 
 let ALL_EVENTS = [];
+let UPCOMING_EVENTS = [];
 let activeCat  = 'all';
 let activeCity = 'all';
 
 async function loadEvents() {
   const grid = document.getElementById('events-grid');
   const now  = new Date();
-  const max  = new Date(now.getTime() + 90 * 24 * 3600 * 1000);
+  const upcomingMax = new Date(now.getTime() + 90 * 24 * 3600 * 1000);
+  const calMin      = new Date(now.getTime() - 180 * 24 * 3600 * 1000);
+  const calMax      = new Date(now.getTime() + 365 * 24 * 3600 * 1000);
 
   try {
     const texts = await Promise.all(
@@ -236,7 +239,7 @@ async function loadEvents() {
     const raw  = texts.flatMap(parseIcs);
     const seen = new Set();
     ALL_EVENTS = raw
-      .filter(ev => ev.start >= now && ev.start <= max)
+      .filter(ev => ev.start >= calMin && ev.start <= calMax)
       .sort((a,b) => a.start - b.start)
       .filter(ev => {
         const key = ev.uid || (ev.summary + ev.start.toISOString());
@@ -244,13 +247,16 @@ async function loadEvents() {
         seen.add(key); return true;
       });
 
+    UPCOMING_EVENTS = ALL_EVENTS.filter(ev => ev.start >= now && ev.start <= upcomingMax);
+
     grid.innerHTML = '';
-    if (!ALL_EVENTS.length) {
+    if (!UPCOMING_EVENTS.length) {
       grid.innerHTML = '<div class="empty-msg">Brak nadchodzących eventów w ciągu najbliższych 90 dni.</div>';
-      return;
+    } else {
+      UPCOMING_EVENTS.forEach(ev => grid.appendChild(makeCard(ev)));
     }
     buildCityFilter();
-    ALL_EVENTS.forEach(ev => grid.appendChild(makeCard(ev)));
+    initCalendar();
     applyFilters();
   } catch (err) {
     console.error(err);
@@ -278,6 +284,205 @@ function applyFilters() {
     const cityOk = activeCity === 'all' || c.dataset.city === activeCity;
     c.classList.toggle('hidden', !(catOk && cityOk));
   });
+  renderCalendar();
+}
+
+// ════════════════════════════════════════════════
+// CUSTOM CALENDAR
+// ════════════════════════════════════════════════
+let CAL_VIEW = null; // {year, month0}
+const MONTH_NAMES_PL = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec',
+                        'Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+
+function dayKeyFromParts(y, m0, d) {
+  return `${y}-${String(m0+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function eventDayKeys(ev) {
+  const keys = [];
+  const startKey = wDayKey(ev.start);
+  if (!ev.allDay || !ev.end) { keys.push(startKey); return keys; }
+  const endExclusive = ev.end;
+  const cursor = new Date(ev.start.getTime());
+  let safety = 60;
+  while (safety-- > 0) {
+    const k = wDayKey(cursor);
+    keys.push(k);
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+    if (cursor >= endExclusive) break;
+  }
+  return keys;
+}
+
+function eventMatchesFilters(ev) {
+  const types = detectTypes(ev.summary, ev.location);
+  if (activeCat !== 'all' && !types.includes(activeCat)) return false;
+  if (activeCity !== 'all') {
+    const city = detectCity(ev.location) || 'unknown';
+    if (city !== activeCity) return false;
+  }
+  return true;
+}
+
+function initCalendar() {
+  const today = new Date();
+  CAL_VIEW = { year: today.getFullYear(), month0: today.getMonth() };
+
+  document.getElementById('cal-prev').addEventListener('click', () => {
+    let { year, month0 } = CAL_VIEW;
+    month0 -= 1;
+    if (month0 < 0) { month0 = 11; year -= 1; }
+    CAL_VIEW = { year, month0 };
+    renderCalendar();
+  });
+  document.getElementById('cal-next').addEventListener('click', () => {
+    let { year, month0 } = CAL_VIEW;
+    month0 += 1;
+    if (month0 > 11) { month0 = 0; year += 1; }
+    CAL_VIEW = { year, month0 };
+    renderCalendar();
+  });
+  document.getElementById('cal-today').addEventListener('click', () => {
+    const t = new Date();
+    CAL_VIEW = { year: t.getFullYear(), month0: t.getMonth() };
+    renderCalendar();
+  });
+
+  renderCalendar();
+}
+
+function renderCalendar() {
+  if (!CAL_VIEW) return;
+  const { year, month0 } = CAL_VIEW;
+  const grid  = document.getElementById('cal-grid');
+  const label = document.getElementById('cal-month-label');
+  if (!grid || !label) return;
+
+  label.textContent = `${MONTH_NAMES_PL[month0]} ${year}`;
+
+  const eventsByDay = new Map();
+  for (const ev of ALL_EVENTS) {
+    if (!eventMatchesFilters(ev)) continue;
+    for (const k of eventDayKeys(ev)) {
+      if (!eventsByDay.has(k)) eventsByDay.set(k, []);
+      eventsByDay.get(k).push(ev);
+    }
+  }
+
+  const firstOfMonth = new Date(Date.UTC(year, month0, 1));
+  const jsWeekday    = firstOfMonth.getUTCDay();
+  const offset       = (jsWeekday + 6) % 7; // Monday-first
+  const daysInMonth  = new Date(Date.UTC(year, month0 + 1, 0)).getUTCDate();
+  const totalCells   = Math.ceil((offset + daysInMonth) / 7) * 7;
+  const todayKey     = wDayKey(new Date());
+
+  grid.innerHTML = '';
+  for (let i = 0; i < totalCells; i++) {
+    const dayOffset = i - offset;
+    const cellDate  = new Date(Date.UTC(year, month0, 1 + dayOffset));
+    const cy = cellDate.getUTCFullYear();
+    const cm = cellDate.getUTCMonth();
+    const cd = cellDate.getUTCDate();
+    const key = dayKeyFromParts(cy, cm, cd);
+    const inMonth = cm === month0 && cy === year;
+    const isToday = key === todayKey;
+    const dayEvents = eventsByDay.get(key) || [];
+    const dow = (i % 7); // 0=Mon ... 6=Sun
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    if (!inMonth)  cell.classList.add('cal-day-out');
+    if (isToday)   cell.classList.add('cal-day-today');
+    if (dow >= 5)  cell.classList.add('cal-day-weekend');
+    if (dayEvents.length) cell.classList.add('cal-day-has-events');
+
+    const num = document.createElement('div');
+    num.className = 'cal-day-num';
+    num.textContent = cd;
+    cell.appendChild(num);
+
+    if (dayEvents.length) {
+      const evList = document.createElement('div');
+      evList.className = 'cal-day-events';
+      const visible = dayEvents.slice(0, 3);
+      for (const ev of visible) {
+        const types = detectTypes(ev.summary, ev.location);
+        const primary = types[0];
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'cal-event';
+        chip.dataset.primary = primary;
+        const timeLabel = ev.allDay ? '' : wTime(ev.start);
+        const titleText = ev.summary || 'Bez nazwy';
+        chip.innerHTML = `
+          <span class="cal-event-dot" aria-hidden="true"></span>
+          ${timeLabel ? `<span class="cal-event-time">${timeLabel}</span>` : ''}
+          <span class="cal-event-title">${titleText}</span>
+        `;
+        chip.title = `${titleText}${ev.location ? ' · ' + ev.location : ''}`;
+        chip.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEventModal(ev, types, detectCity(ev.location));
+        });
+        evList.appendChild(chip);
+      }
+      if (dayEvents.length > visible.length) {
+        const more = document.createElement('button');
+        more.type = 'button';
+        more.className = 'cal-event-more';
+        more.textContent = `+${dayEvents.length - visible.length} więcej`;
+        more.addEventListener('click', (e) => {
+          e.stopPropagation();
+          cell.classList.toggle('cal-day-expanded');
+          renderExpandedDay(cell, dayEvents);
+        });
+        evList.appendChild(more);
+      }
+      cell.appendChild(evList);
+
+      const dotRow = document.createElement('div');
+      dotRow.className = 'cal-day-dots';
+      const seenCats = new Set();
+      for (const ev of dayEvents) {
+        const t = detectTypes(ev.summary, ev.location)[0];
+        if (seenCats.has(t)) continue;
+        seenCats.add(t);
+        const d = document.createElement('span');
+        d.className = 'cal-day-dot';
+        d.dataset.primary = t;
+        dotRow.appendChild(d);
+      }
+      cell.appendChild(dotRow);
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+function renderExpandedDay(cell, dayEvents) {
+  const list = cell.querySelector('.cal-day-events');
+  if (!list) return;
+  list.innerHTML = '';
+  for (const ev of dayEvents) {
+    const types = detectTypes(ev.summary, ev.location);
+    const primary = types[0];
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'cal-event';
+    chip.dataset.primary = primary;
+    const timeLabel = ev.allDay ? '' : wTime(ev.start);
+    const titleText = ev.summary || 'Bez nazwy';
+    chip.innerHTML = `
+      <span class="cal-event-dot" aria-hidden="true"></span>
+      ${timeLabel ? `<span class="cal-event-time">${timeLabel}</span>` : ''}
+      <span class="cal-event-title">${titleText}</span>
+    `;
+    chip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEventModal(ev, types, detectCity(ev.location));
+    });
+    list.appendChild(chip);
+  }
 }
 
 document.querySelectorAll('#cat-pills .pill').forEach(btn => {
