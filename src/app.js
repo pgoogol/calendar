@@ -7,6 +7,13 @@ const ICS_URLS = [
 const PROXY = 'https://corsproxy.io/?';
 const TZ_DISPLAY = 'Europe/Warsaw';
 
+// Google Form for submitting events. Replace these with your form URLs after creating it
+// (see apps-script/Code.gs for setup instructions).
+//   FORM_URL       — public share link from "Send" → "Link" tab (used as fallback when iframe is blocked)
+//   FORM_EMBED_URL — `src` attribute from "Send" → "<>" (Embed) tab; ends with `?embedded=true`
+const FORM_URL       = 'https://forms.gle/REPLACE_WITH_YOUR_FORM_ID';
+const FORM_EMBED_URL = 'https://docs.google.com/forms/d/e/REPLACE_WITH_YOUR_FORM_ID/viewform?embedded=true';
+
 function normalisePL(str) {
   return (str || '').toLowerCase()
     .replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e')
@@ -381,8 +388,26 @@ function copyIcsUrl() {
   });
 }
 
+function openSubmitModal() {
+  const frame = document.getElementById('submit-frame');
+  if (frame.dataset.loaded !== '1') {
+    frame.src = FORM_EMBED_URL;
+    frame.dataset.loaded = '1';
+  }
+  document.getElementById('submit-external-link').href = FORM_URL;
+  document.getElementById('submit-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSubmitModal() {
+  document.getElementById('submit-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleSubmitOverlayClick(e) {
+  if (e.target === document.getElementById('submit-overlay')) closeSubmitModal();
+}
+
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeEventModal(); closeImportModal(); }
+  if (e.key === 'Escape') { closeEventModal(); closeImportModal(); closeSubmitModal(); }
 });
 
 // ════════════════════════════════════════════════

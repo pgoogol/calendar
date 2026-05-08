@@ -598,8 +598,57 @@ footer {
 .copy-btn:hover  { background: rgba(var(--primary-rgb),.2); }
 .copy-btn.copied { background: rgba(var(--cat-warsztaty-rgb),.3); border-color: var(--sage); color: var(--cat-warsztaty-text); }
 
+/* ════════════════════════════════════
+   HEADER ACTIONS (multiple CTA buttons)
+════════════════════════════════════ */
+.header-actions {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  position: relative; z-index: 1;
+}
+
+/* ════════════════════════════════════
+   SUBMIT EVENT MODAL
+════════════════════════════════════ */
+.submit-modal {
+  background: var(--surface); border: 1px solid rgba(var(--primary-rgb),.2);
+  border-radius: 4px; width: 100%; max-width: 720px;
+  max-height: calc(100vh - 40px);
+  display: flex; flex-direction: column;
+  overflow: hidden; position: relative;
+  transform: translateY(16px) scale(.97);
+  transition: transform .25s cubic-bezier(.22,1,.36,1);
+  box-shadow: 0 40px 100px rgba(0,0,0,.85);
+}
+.modal-overlay.open .submit-modal { transform: none; }
+.submit-accent { height: 3px; flex-shrink: 0; background: var(--amber); }
+.submit-header { padding: 22px 28px 16px; flex-shrink: 0; }
+.submit-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem; font-weight: 600; color: var(--straw); margin-bottom: 4px;
+}
+.submit-sub { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+.submit-frame-wrap {
+  flex: 1; min-height: 0; padding: 0 16px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.submit-frame {
+  flex: 1; min-height: 480px; width: 100%;
+  border: 1px solid rgba(var(--primary-rgb),.15); border-radius: 2px;
+  background: #fbf5e3;
+}
+:root[data-theme="dark"] .submit-frame { filter: invert(0.92) hue-rotate(180deg); }
+.submit-fallback {
+  text-align: center; font-size: .72rem; color: var(--muted);
+  padding: 4px 8px;
+}
+.submit-fallback a { color: var(--amber); text-decoration: none; }
+.submit-fallback a:hover { text-decoration: underline; }
+
 @media(max-width:600px){
   .events-grid { grid-template-columns: 1fr; }
   .modal-body, .import-body { padding: 18px; }
   .modal-actions { flex-direction: column; }
+  .submit-header { padding: 18px 18px 12px; }
+  .submit-frame-wrap { padding: 0 10px 10px; }
+  .submit-frame { min-height: 70vh; }
 }
