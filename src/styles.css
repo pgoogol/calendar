@@ -480,8 +480,7 @@ h1 em {
 
 .cal-weekdays {
   display: grid; grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  padding: 10px 1px 8px;
+  padding: 10px 8px 6px;
   border-bottom: 1px solid var(--border);
   background: rgba(0,0,0,.12);
 }
