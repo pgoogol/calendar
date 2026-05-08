@@ -479,8 +479,9 @@ h1 em {
 }
 
 .cal-weekdays {
-  display: grid; grid-template-columns: repeat(7, 1fr);
-  padding: 10px 8px 6px;
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px;
+  padding: 10px 1px 8px;
   border-bottom: 1px solid var(--border);
   background: rgba(0,0,0,.12);
 }
@@ -493,7 +494,7 @@ h1 em {
 .cal-weekdays .cal-weekend { color: var(--cat-salsa-text); }
 
 .cal-grid {
-  display: grid; grid-template-columns: repeat(7, 1fr);
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 1px;
   background: var(--border);
   padding: 1px;
@@ -502,6 +503,7 @@ h1 em {
 .cal-day {
   position: relative;
   background: var(--surface);
+  min-width: 0;
   min-height: 96px;
   padding: 6px 6px 8px;
   display: flex; flex-direction: column;
@@ -538,7 +540,8 @@ h1 em {
 }
 .cal-event {
   display: flex; align-items: center; gap: 5px;
-  width: 100%; text-align: left;
+  width: 100%; max-width: 100%; min-width: 0;
+  text-align: left;
   padding: 3px 6px;
   background: rgba(var(--primary-rgb),.06);
   border: 1px solid transparent;
