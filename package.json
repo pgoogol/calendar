@@ -1,0 +1,22 @@
+{
+  "name": "sabor-latino-calendar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sabor Latino — Salsa & Bachata events calendar (Białystok)",
+  "homepage": "https://pgoogol.github.io/calendar/",
+  "scripts": {
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "lint:html": "htmlhint \"*.html\"",
+    "lint:css": "stylelint \"*.css\"",
+    "lint:js": "eslint \"*.js\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "htmlhint": "^1.1.4",
+    "stylelint": "^16.13.2",
+    "stylelint-config-standard": "^36.0.1"
+  }
+}
