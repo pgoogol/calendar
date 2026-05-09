@@ -181,7 +181,9 @@ function setupApprovalColumns() {
     sheet.getRange(2, statusColIdx, Math.max(sheet.getMaxRows() - 1, 1)).setDataValidation(rule);
   }
 
-  ss.toast('Kolumny gotowe. Dodaj triggery (instrukcja w pliku).', 'Setup OK', 6);
+  const msg = 'Kolumny gotowe. Dodaj triggery (instrukcja w pliku).';
+  try { ss.toast(msg, 'Setup OK', 6); }
+  catch (e) { Logger.log('Setup OK — ' + msg); }
 }
 
 // ============================================================================
