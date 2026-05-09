@@ -22,8 +22,13 @@
  *      • "Tytuł wydarzenia"        — krótka odpowiedź, wymagane
  *      • "Link do wydarzenia"      — krótka odpowiedź, opcjonalne
  *                                    (FB event, strona organizatora itp.)
- *      • "Data"                    — data, opcjonalne
+ *      • "Data rozpoczęcia"        — data, opcjonalne
+ *      • "Data zakończenia"        — data, opcjonalne
+ *                                    (zostaw puste dla wydarzeń jednodniowych;
+ *                                    wpisz OSTATNI dzień festiwalu — np.
+ *                                    festiwal 1–3 maja: data zakończenia = 3 maja)
  *      • "Godzina rozpoczęcia"     — godzina, opcjonalne
+ *                                    (puste = wydarzenie całodniowe)
  *      • "Godzina zakończenia"     — godzina, opcjonalne
  *      • "Miejsce"                 — krótka odpowiedź, opcjonalne
  *      • "Miasto"                  — krótka odpowiedź, opcjonalne
@@ -35,8 +40,14 @@
  *    Wskazówka: w opisie formularza warto napisać „Wystarczy wkleić link do
  *    wydarzenia z Facebooka — resztę uzupełnimy.". Jeśli zgłaszający poda
  *    tylko link, to PRZED zatwierdzeniem otwórz link i uzupełnij datę,
- *    godzinę i miejsce w odpowiednich kolumnach arkusza — bez tych pól nie
- *    da się utworzyć wydarzenia w kalendarzu.
+ *    godzinę i miejsce w odpowiednich kolumnach arkusza — bez daty rozpoczęcia
+ *    nie da się utworzyć wydarzenia w kalendarzu.
+ *
+ *    Obsługiwane warianty:
+ *      a) jednodniowe z godzinami (np. potańcówka 22:00–04:00)
+ *      b) jednodniowe całodniowe (open day; brak godziny rozpoczęcia)
+ *      c) wielodniowe całodniowe (festiwal 1–3 maja; brak godzin)
+ *      d) wielodniowe z godzinami (np. kongres pt 18:00 → nd 14:00)
  *
  * 2. Połącz formularz z arkuszem: Odpowiedzi → ikonka arkusza → "Utwórz arkusz".
  *
@@ -104,7 +115,8 @@ const COL = {
   TIMESTAMP:   'Sygnatura czasowa',          // dodawane automatycznie przez Google Forms
   TITLE:       'Tytuł wydarzenia',
   LINK:        'Link do wydarzenia',
-  DATE:        'Data',
+  DATE_START:  'Data rozpoczęcia',
+  DATE_END:    'Data zakończenia',
   TIME_START:  'Godzina rozpoczęcia',
   TIME_END:    'Godzina zakończenia',
   LOCATION:    'Miejsce',
@@ -230,16 +242,13 @@ function readRow_(sheet, row, headers) {
 }
 
 function createCalendarEvent_(data) {
-  const start = combineDateTime_(data[COL.DATE], data[COL.TIME_START]);
-  if (!start) throw new Error('Brak prawidłowej daty lub godziny rozpoczęcia.');
+  const startDate = parseDate_(data[COL.DATE_START]);
+  if (!startDate) throw new Error('Brak prawidłowej daty rozpoczęcia.');
+  const endDate = parseDate_(data[COL.DATE_END]) || new Date(startDate.getTime());
+  if (endDate < startDate) throw new Error('Data zakończenia jest wcześniejsza niż data rozpoczęcia.');
 
-  let end = combineDateTime_(data[COL.DATE], data[COL.TIME_END]);
-  if (!end) {
-    end = new Date(start.getTime() + CONFIG.DEFAULT_DURATION_HOURS * 3600 * 1000);
-  } else if (end <= start) {
-    // Godzina zakończenia wcześniejsza niż początek → wydarzenie kończy się następnego dnia.
-    end = new Date(end.getTime() + 24 * 3600 * 1000);
-  }
+  const startTime = parseTimeOfDay_(data[COL.TIME_START]);
+  const endTime   = parseTimeOfDay_(data[COL.TIME_END]);
 
   const title = String(data[COL.TITLE] || '').trim() || '(bez tytułu)';
   const category = String(data[COL.CATEGORY] || '').trim();
@@ -261,10 +270,40 @@ function createCalendarEvent_(data) {
   const calendar = CalendarApp.getCalendarById(CONFIG.CALENDAR_ID);
   if (!calendar) throw new Error(`Brak dostępu do kalendarza ${CONFIG.CALENDAR_ID}. Sprawdź, czy konto Apps Script ma uprawnienia edycji.`);
 
-  const event = calendar.createEvent(finalTitle, start, end, {
-    location: location,
-    description: description,
-  });
+  const opts = { location: location, description: description };
+  let event;
+
+  if (!startTime) {
+    // Wydarzenie całodniowe — jedno- lub wielodniowe.
+    // CalendarApp traktuje endDate w createAllDayEvent jako WYŁĄCZNĄ
+    // (event widoczny do dnia poprzedniego), więc dodajemy 1 dzień,
+    // żeby ostatni dzień festiwalu też się pokazał.
+    if (sameDay_(startDate, endDate)) {
+      event = calendar.createAllDayEvent(finalTitle, startDate, opts);
+    } else {
+      const exclusiveEnd = new Date(endDate.getTime() + 24 * 3600 * 1000);
+      event = calendar.createAllDayEvent(finalTitle, startDate, exclusiveEnd, opts);
+    }
+  } else {
+    // Wydarzenie z godzinami.
+    const start = withTime_(startDate, startTime);
+    let end;
+    if (endTime) {
+      end = withTime_(endDate, endTime);
+      // Jednodniowe i koniec ≤ start → wydarzenie wpada w noc, kończy się następnego dnia.
+      if (sameDay_(startDate, endDate) && end <= start) {
+        end = new Date(end.getTime() + 24 * 3600 * 1000);
+      }
+    } else if (sameDay_(startDate, endDate)) {
+      end = new Date(start.getTime() + CONFIG.DEFAULT_DURATION_HOURS * 3600 * 1000);
+    } else {
+      // Wielodniowe z godziną startu, bez końca → kończy się o tej samej godzinie ostatniego dnia.
+      end = withTime_(endDate, startTime);
+    }
+    if (end <= start) throw new Error('Koniec wydarzenia wypada przed jego rozpoczęciem.');
+    event = calendar.createEvent(finalTitle, start, end, opts);
+  }
+
   return event.getId();
 }
 
@@ -275,46 +314,60 @@ function deleteCalendarEvent_(eventId) {
   if (event) event.deleteEvent();
 }
 
-function combineDateTime_(dateValue, timeValue) {
-  if (!dateValue) return null;
-  const date = (dateValue instanceof Date) ? new Date(dateValue.getTime()) : new Date(dateValue);
-  if (isNaN(date.getTime())) return null;
+function parseDate_(value) {
+  if (!value) return null;
+  const d = (value instanceof Date) ? new Date(value.getTime()) : new Date(value);
+  if (isNaN(d.getTime())) return null;
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
 
-  if (timeValue === null || timeValue === undefined || timeValue === '') {
-    return null;
+function parseTimeOfDay_(value) {
+  if (value === null || value === undefined || value === '') return null;
+  if (value instanceof Date) {
+    return { h: value.getHours(), m: value.getMinutes() };
   }
+  const match = String(value).match(/(\d{1,2})[:.](\d{2})/);
+  if (!match) return null;
+  return { h: parseInt(match[1], 10), m: parseInt(match[2], 10) };
+}
 
-  let h = 0, m = 0;
-  if (timeValue instanceof Date) {
-    h = timeValue.getHours();
-    m = timeValue.getMinutes();
-  } else {
-    const match = String(timeValue).match(/(\d{1,2})[:.](\d{2})/);
-    if (!match) return null;
-    h = parseInt(match[1], 10);
-    m = parseInt(match[2], 10);
-  }
-  date.setHours(h, m, 0, 0);
-  return date;
+function withTime_(date, time) {
+  const d = new Date(date.getTime());
+  d.setHours(time.h, time.m, 0, 0);
+  return d;
+}
+
+function sameDay_(a, b) {
+  return a.getFullYear() === b.getFullYear()
+      && a.getMonth()    === b.getMonth()
+      && a.getDate()     === b.getDate();
 }
 
 function notifyAdmin_(sheet, row, headers) {
   if (!CONFIG.ADMIN_EMAIL || CONFIG.ADMIN_EMAIL === 'YOUR_EMAIL@example.com') return;
   const data = readRow_(sheet, row, headers);
 
-  const dateStr = data[COL.DATE]
-    ? Utilities.formatDate(new Date(data[COL.DATE]), CONFIG.TIMEZONE, 'yyyy-MM-dd')
-    : '?';
-  const startStr = data[COL.TIME_START]
-    ? (data[COL.TIME_START] instanceof Date
-        ? Utilities.formatDate(data[COL.TIME_START], CONFIG.TIMEZONE, 'HH:mm')
-        : String(data[COL.TIME_START]))
-    : '?';
-  const endStr = data[COL.TIME_END]
-    ? (data[COL.TIME_END] instanceof Date
-        ? Utilities.formatDate(data[COL.TIME_END], CONFIG.TIMEZONE, 'HH:mm')
-        : String(data[COL.TIME_END]))
-    : '?';
+  const fmtDate = v => v
+    ? Utilities.formatDate(new Date(v), CONFIG.TIMEZONE, 'yyyy-MM-dd')
+    : '';
+  const fmtTime = v => {
+    if (!v) return '';
+    if (v instanceof Date) return Utilities.formatDate(v, CONFIG.TIMEZONE, 'HH:mm');
+    return String(v);
+  };
+
+  const dStart = fmtDate(data[COL.DATE_START]);
+  const dEnd   = fmtDate(data[COL.DATE_END]);
+  const tStart = fmtTime(data[COL.TIME_START]);
+  const tEnd   = fmtTime(data[COL.TIME_END]);
+
+  const dateRange = dEnd && dEnd !== dStart
+    ? `${dStart || '?'} → ${dEnd}`
+    : (dStart || '?');
+  const timeRange = (tStart || tEnd)
+    ? `${tStart || '?'} – ${tEnd || '?'}`
+    : '(całodniowe)';
 
   const subject = `Nowe zgłoszenie: ${data[COL.TITLE] || '(bez tytułu)'}`;
   const body = [
@@ -322,7 +375,7 @@ function notifyAdmin_(sheet, row, headers) {
     '',
     `Tytuł:     ${data[COL.TITLE] || ''}`,
     `Link:      ${data[COL.LINK] || '(brak)'}`,
-    `Kiedy:     ${dateStr}, ${startStr} – ${endStr}`,
+    `Kiedy:     ${dateRange}, ${timeRange}`,
     `Miejsce:   ${data[COL.LOCATION] || ''}`,
     `Miasto:    ${data[COL.CITY] || ''}`,
     `Kategoria: ${data[COL.CATEGORY] || ''}`,
@@ -335,6 +388,8 @@ function notifyAdmin_(sheet, row, headers) {
     '',
     'Jeśli zgłaszający podał tylko link — otwórz go i uzupełnij datę,',
     'godzinę oraz miejsce w arkuszu PRZED zmianą statusu na "Approved".',
+    'Wydarzenia kilkudniowe: wpisz "Datę zakończenia" jako OSTATNI dzień',
+    '(skrypt sam doda 1 dzień przy tworzeniu wydarzenia całodniowego).',
     '',
     'Aby opublikować — zmień Status na "Approved".',
     'Aby odrzucić    — zmień Status na "Rejected".',
