@@ -493,6 +493,12 @@ footer {
   font-size: .74rem; color: var(--muted); letter-spacing: .06em;
   position: relative; z-index: 1;
 }
+footer .footer-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-weight: 600;
+  font-size: 1.05rem; letter-spacing: .01em;
+  color: var(--amber);
+}
 
 /* Decorative Slavic "S" */
 .deco {
