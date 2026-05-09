@@ -20,6 +20,10 @@
  *    może podać albo pełne dane, albo sam link do wydarzenia z Facebooka.
  *
  *      • "Tytuł wydarzenia"        — krótka odpowiedź, wymagane
+ *                                    (warto wpleść słowo wskazujące typ —
+ *                                    np. "Salsa", "Bachata", "Warsztaty",
+ *                                    "Party", "Festiwal" — strona automatycznie
+ *                                    przypisze tag na podstawie tytułu)
  *      • "Link do wydarzenia"      — krótka odpowiedź, opcjonalne
  *                                    (FB event, strona organizatora itp.)
  *      • "Data rozpoczęcia"        — data, opcjonalne
@@ -31,10 +35,10 @@
  *                                    (puste = wydarzenie całodniowe)
  *      • "Godzina zakończenia"     — godzina, opcjonalne
  *      • "Miejsce"                 — krótka odpowiedź, opcjonalne
- *      • "Miasto"                  — krótka odpowiedź, opcjonalne
+ *                                    (np. "Klub XYZ, Białystok" — miasto
+ *                                    wpisz po przecinku, strona sama je
+ *                                    rozpozna i pokaże filtr po miastach)
  *      • "Opis"                    — akapit, opcjonalne
- *      • "Kategoria"               — jednokrotny wybór: Salsa / Bachata /
- *                                    Warsztaty / Party / Festiwale
  *      • "Email kontaktowy"        — krótka odpowiedź, opcjonalne
  *
  *    Wskazówka: w opisie formularza warto napisać „Wystarczy wkleić link do
@@ -120,9 +124,7 @@ const COL = {
   TIME_START:  'Godzina rozpoczęcia',
   TIME_END:    'Godzina zakończenia',
   LOCATION:    'Miejsce',
-  CITY:        'Miasto',
   DESC:        'Opis',
-  CATEGORY:    'Kategoria',
   CONTACT:     'Email kontaktowy',
   STATUS:      'Status',
   CALENDAR_ID: 'Calendar Event ID',
@@ -250,16 +252,8 @@ function createCalendarEvent_(data) {
   const startTime = parseTimeOfDay_(data[COL.TIME_START]);
   const endTime   = parseTimeOfDay_(data[COL.TIME_END]);
 
-  const title = String(data[COL.TITLE] || '').trim() || '(bez tytułu)';
-  const category = String(data[COL.CATEGORY] || '').trim();
-  const finalTitle = (category && !title.toLowerCase().includes(category.toLowerCase()))
-    ? `${title} [${category}]`
-    : title;
-
-  const location = [data[COL.LOCATION], data[COL.CITY]]
-    .map(v => String(v || '').trim())
-    .filter(Boolean)
-    .join(', ');
+  const finalTitle = String(data[COL.TITLE] || '').trim() || '(bez tytułu)';
+  const location = String(data[COL.LOCATION] || '').trim();
 
   const descParts = [];
   if (data[COL.DESC])    descParts.push(String(data[COL.DESC]).trim());
@@ -373,13 +367,11 @@ function notifyAdmin_(sheet, row, headers) {
   const body = [
     'Nowe zgłoszenie wydarzenia czeka na zatwierdzenie:',
     '',
-    `Tytuł:     ${data[COL.TITLE] || ''}`,
-    `Link:      ${data[COL.LINK] || '(brak)'}`,
-    `Kiedy:     ${dateRange}, ${timeRange}`,
-    `Miejsce:   ${data[COL.LOCATION] || ''}`,
-    `Miasto:    ${data[COL.CITY] || ''}`,
-    `Kategoria: ${data[COL.CATEGORY] || ''}`,
-    `Kontakt:   ${data[COL.CONTACT] || '(brak)'}`,
+    `Tytuł:    ${data[COL.TITLE] || ''}`,
+    `Link:     ${data[COL.LINK] || '(brak)'}`,
+    `Kiedy:    ${dateRange}, ${timeRange}`,
+    `Miejsce:  ${data[COL.LOCATION] || ''}`,
+    `Kontakt:  ${data[COL.CONTACT] || '(brak)'}`,
     '',
     'Opis:',
     String(data[COL.DESC] || '(brak)'),
