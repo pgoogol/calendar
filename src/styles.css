@@ -325,16 +325,25 @@ button.section-toggle {
   text-transform: uppercase; color: var(--amber);
 }
 .section-toggle-label { flex: 0 0 auto; }
-.section-toggle::after { order: 1; }
 .section-toggle-chevron {
-  order: 2; flex-shrink: 0; color: var(--amber);
-  transition: transform .25s ease;
+  flex-shrink: 0;
+  width: 22px; height: 22px; padding: 4px;
+  border: 1px solid rgba(var(--primary-rgb),.35);
+  border-radius: 50%;
+  color: var(--amber);
+  background: rgba(var(--primary-rgb),.06);
+  box-sizing: border-box;
+  transition: transform .25s ease, background .2s, border-color .2s, color .2s;
 }
 .section-toggle[aria-expanded="false"] .section-toggle-chevron {
   transform: rotate(-90deg);
 }
+.section-toggle:hover .section-toggle-chevron {
+  background: rgba(var(--primary-rgb),.18);
+  border-color: var(--amber);
+  color: var(--straw);
+}
 .section-toggle:hover { color: var(--straw); }
-.section-toggle:hover .section-toggle-chevron { color: var(--straw); }
 .section-toggle:focus-visible {
   outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 2px;
 }
