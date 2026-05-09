@@ -114,14 +114,14 @@ const CONFIG = {
   CALENDAR_ID: '459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8@group.calendar.google.com',
 
   // Adres, na który leci powiadomienie o nowym zgłoszeniu.
-  ADMIN_EMAIL: 'YOUR_EMAIL@example.com',
+  ADMIN_EMAIL: 'pgogol26@gmail.com',
 
   // ID arkusza z odpowiedziami formularza. Wymagane gdy projekt Apps Script jest
   // STANDALONE (utworzony z script.google.com); dla projektu container-bound
   // (otwartego przez Rozszerzenia → Apps Script wewnątrz arkusza) można zostawić
   // pusty string — wtedy skrypt sięgnie po aktywny arkusz automatycznie.
   // ID weź z URL arkusza: https://docs.google.com/spreadsheets/d/<ID-TUTAJ>/edit
-  SPREADSHEET_ID: '',
+  SPREADSHEET_ID: '1Z9Bk-2CmlM6mGpr_h3s0lamSp9KOlzNzp_YngnxjIHg',
 
   // Strefa czasowa wyświetlana w mailach. Powinna pasować do strefy projektu.
   TIMEZONE: 'Europe/Warsaw',
