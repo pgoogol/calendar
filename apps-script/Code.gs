@@ -75,11 +75,15 @@
  *
  * 7. Dodaj triggery: ikonka zegara (Triggers) → "+ Add Trigger":
  *      a) Function: onFormSubmitTrigger
- *         Event source: From spreadsheet
+ *         Event source: From spreadsheet (preferowane) — wymaga, by skrypt
+ *                       był container-bound z arkuszem. Jeśli niedostępne,
+ *                       wybierz "From form" — kod też to obsłuży.
  *         Event type:   On form submit
  *      b) Function: onEditTrigger
  *         Event source: From spreadsheet
  *         Event type:   On edit
+ *         (UWAGA: trigger "On edit" wymaga projektu container-bound z arkuszem;
+ *          z poziomu standalone trzeba przenieść skrypt do arkusza.)
  *
  * 8. Skopiuj linki do formularza z menu "Wyślij" (prawy górny róg formularza):
  *      • zakładka "Link"  →  wklej do FORM_URL       w src/app.js
@@ -190,10 +194,22 @@ function setupApprovalColumns() {
 // TRIGGERS
 // ============================================================================
 
-/** Trigger: On form submit — ustawia Status=Pending i wysyła maila. */
+/** Trigger: On form submit — ustawia Status=Pending i wysyła maila.
+ *  Działa zarówno dla triggera "From spreadsheet → On form submit"
+ *  (e.range jest dostępne) jak i "From form → On form submit"
+ *  (brak e.range — fallback do ostatniego wiersza pierwszego arkusza).
+ */
 function onFormSubmitTrigger(e) {
-  const sheet = e.range.getSheet();
-  const row = e.range.getRow();
+  let sheet, row;
+  if (e && e.range) {
+    sheet = e.range.getSheet();
+    row = e.range.getRow();
+  } else {
+    const ss = getSpreadsheet_();
+    if (!ss) throw new Error('Trigger uruchomiony bez kontekstu arkusza. Ustaw CONFIG.SPREADSHEET_ID albo zmień trigger na "From spreadsheet → On form submit".');
+    sheet = ss.getSheets()[0];
+    row = sheet.getLastRow();
+  }
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
 
   const statusColIdx = headers.indexOf(COL.STATUS) + 1;
