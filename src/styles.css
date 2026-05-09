@@ -317,6 +317,34 @@ h1 em {
   background: linear-gradient(90deg, rgba(var(--primary-rgb),.3), transparent);
 }
 
+/* Collapsible section toggle (button variant of .section-title) */
+button.section-toggle {
+  width: 100%; background: transparent; border: 0; padding: 0; margin: 0 0 16px;
+  font: inherit; text-align: left; cursor: pointer;
+  font-size: .65rem; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--amber);
+}
+.section-toggle-label { flex: 0 0 auto; }
+.section-toggle::after { order: 1; }
+.section-toggle-chevron {
+  order: 2; flex-shrink: 0; color: var(--amber);
+  transition: transform .25s ease;
+}
+.section-toggle[aria-expanded="false"] .section-toggle-chevron {
+  transform: rotate(-90deg);
+}
+.section-toggle:hover { color: var(--straw); }
+.section-toggle:hover .section-toggle-chevron { color: var(--straw); }
+.section-toggle:focus-visible {
+  outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 2px;
+}
+
+/* Collapsed grid */
+.events-grid.collapsed {
+  display: none;
+  margin-bottom: 24px;
+}
+
 .events-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));

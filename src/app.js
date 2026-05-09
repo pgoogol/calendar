@@ -411,6 +411,28 @@ document.addEventListener('keydown', e => {
 });
 
 // ════════════════════════════════════════════════
+// EVENTS SECTION COLLAPSE
+// ════════════════════════════════════════════════
+(function setupEventsToggle() {
+  const btn = document.getElementById('events-toggle');
+  const grid = document.getElementById('events-grid');
+  if (!btn || !grid) return;
+  const STORAGE_KEY = 'events-collapsed';
+  let collapsed = false;
+  try { collapsed = localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) {}
+  const apply = () => {
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    grid.classList.toggle('collapsed', collapsed);
+  };
+  apply();
+  btn.addEventListener('click', () => {
+    collapsed = !collapsed;
+    try { localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); } catch (e) {}
+    apply();
+  });
+})();
+
+// ════════════════════════════════════════════════
 // THEME TOGGLE
 // ════════════════════════════════════════════════
 (function setupThemeToggle() {
