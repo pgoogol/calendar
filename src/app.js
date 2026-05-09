@@ -11,8 +11,8 @@ const TZ_DISPLAY = 'Europe/Warsaw';
 // (see apps-script/Code.gs for setup instructions).
 //   FORM_URL       — public share link from "Send" → "Link" tab (used as fallback when iframe is blocked)
 //   FORM_EMBED_URL — `src` attribute from "Send" → "<>" (Embed) tab; ends with `?embedded=true`
-const FORM_URL       = 'https://forms.gle/REPLACE_WITH_YOUR_FORM_ID';
-const FORM_EMBED_URL = 'https://docs.google.com/forms/d/e/REPLACE_WITH_YOUR_FORM_ID/viewform?embedded=true';
+const FORM_URL       = 'https://forms.gle/iSA5wcozKqmcD5Ad6';
+const FORM_EMBED_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe5CHOQV2CyM7GCbEqlV-jFASByplZKIX1JdN6al5jkG1avUw/viewform?embedded=true';
 
 function normalisePL(str) {
   return (str || '').toLowerCase()

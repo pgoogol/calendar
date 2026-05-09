@@ -121,7 +121,7 @@ const CONFIG = {
   // (otwartego przez Rozszerzenia → Apps Script wewnątrz arkusza) można zostawić
   // pusty string — wtedy skrypt sięgnie po aktywny arkusz automatycznie.
   // ID weź z URL arkusza: https://docs.google.com/spreadsheets/d/<ID-TUTAJ>/edit
-  SPREADSHEET_ID: '1Z9Bk-2CmlM6mGpr_h3s0lamSp9KOlzNzp_YngnxjIHg',
+  SPREADSHEET_ID: '1b43ULkQUK6rEtfvUwdobOf2HlmDwmMsDO8FW9lpDm64',
 
   // Strefa czasowa wyświetlana w mailach. Powinna pasować do strefy projektu.
   TIMEZONE: 'Europe/Warsaw',
