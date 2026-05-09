@@ -14,19 +14,29 @@
  * INSTRUKCJA WDROŻENIA (jednorazowo)
  * ----------------------------------------------------------------------------
  *
- * 1. Stwórz Formularz Google z polami w TEJ KOLEJNOŚCI (nazwy muszą się zgadzać
- *    z obiektem COL poniżej — najprościej skopiować je 1:1):
+ * 1. Stwórz Formularz Google z polami (nazwy muszą się zgadzać z obiektem COL
+ *    poniżej — najprościej skopiować je 1:1). Tylko "Tytuł wydarzenia" jest
+ *    technicznie wymagany — pozostałe zostaw OPCJONALNE, dzięki czemu zgłaszający
+ *    może podać albo pełne dane, albo sam link do wydarzenia z Facebooka.
  *
  *      • "Tytuł wydarzenia"        — krótka odpowiedź, wymagane
- *      • "Data"                    — data, wymagane
- *      • "Godzina rozpoczęcia"     — godzina, wymagane
+ *      • "Link do wydarzenia"      — krótka odpowiedź, opcjonalne
+ *                                    (FB event, strona organizatora itp.)
+ *      • "Data"                    — data, opcjonalne
+ *      • "Godzina rozpoczęcia"     — godzina, opcjonalne
  *      • "Godzina zakończenia"     — godzina, opcjonalne
- *      • "Miejsce"                 — krótka odpowiedź, wymagane
- *      • "Miasto"                  — krótka odpowiedź
+ *      • "Miejsce"                 — krótka odpowiedź, opcjonalne
+ *      • "Miasto"                  — krótka odpowiedź, opcjonalne
  *      • "Opis"                    — akapit, opcjonalne
  *      • "Kategoria"               — jednokrotny wybór: Salsa / Bachata /
  *                                    Warsztaty / Party / Festiwale
  *      • "Email kontaktowy"        — krótka odpowiedź, opcjonalne
+ *
+ *    Wskazówka: w opisie formularza warto napisać „Wystarczy wkleić link do
+ *    wydarzenia z Facebooka — resztę uzupełnimy.". Jeśli zgłaszający poda
+ *    tylko link, to PRZED zatwierdzeniem otwórz link i uzupełnij datę,
+ *    godzinę i miejsce w odpowiednich kolumnach arkusza — bez tych pól nie
+ *    da się utworzyć wydarzenia w kalendarzu.
  *
  * 2. Połącz formularz z arkuszem: Odpowiedzi → ikonka arkusza → "Utwórz arkusz".
  *
@@ -93,6 +103,7 @@ const CONFIG = {
 const COL = {
   TIMESTAMP:   'Sygnatura czasowa',          // dodawane automatycznie przez Google Forms
   TITLE:       'Tytuł wydarzenia',
+  LINK:        'Link do wydarzenia',
   DATE:        'Data',
   TIME_START:  'Godzina rozpoczęcia',
   TIME_END:    'Godzina zakończenia',
@@ -243,6 +254,7 @@ function createCalendarEvent_(data) {
 
   const descParts = [];
   if (data[COL.DESC])    descParts.push(String(data[COL.DESC]).trim());
+  if (data[COL.LINK])    descParts.push(String(data[COL.LINK]).trim());
   if (data[COL.CONTACT]) descParts.push(`Kontakt: ${String(data[COL.CONTACT]).trim()}`);
   const description = descParts.join('\n\n');
 
@@ -309,6 +321,7 @@ function notifyAdmin_(sheet, row, headers) {
     'Nowe zgłoszenie wydarzenia czeka na zatwierdzenie:',
     '',
     `Tytuł:     ${data[COL.TITLE] || ''}`,
+    `Link:      ${data[COL.LINK] || '(brak)'}`,
     `Kiedy:     ${dateStr}, ${startStr} – ${endStr}`,
     `Miejsce:   ${data[COL.LOCATION] || ''}`,
     `Miasto:    ${data[COL.CITY] || ''}`,
@@ -319,6 +332,9 @@ function notifyAdmin_(sheet, row, headers) {
     String(data[COL.DESC] || '(brak)'),
     '',
     `Arkusz: ${SpreadsheetApp.getActiveSpreadsheet().getUrl()}`,
+    '',
+    'Jeśli zgłaszający podał tylko link — otwórz go i uzupełnij datę,',
+    'godzinę oraz miejsce w arkuszu PRZED zmianą statusu na "Approved".',
     '',
     'Aby opublikować — zmień Status na "Approved".',
     'Aby odrzucić    — zmień Status na "Rejected".',
