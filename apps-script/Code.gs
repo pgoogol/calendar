@@ -55,8 +55,14 @@
  *
  * 2. Połącz formularz z arkuszem: Odpowiedzi → ikonka arkusza → "Utwórz arkusz".
  *
- * 3. W arkuszu otwórz Rozszerzenia → Apps Script. Wklej zawartość tego pliku
- *    jako Code.gs (nadpisując domyślną treść).
+ * 3. W arkuszu otwórz Rozszerzenia → Apps Script (TAK zalecane — to tworzy
+ *    projekt "container-bound", powiązany z arkuszem; setupApprovalColumns()
+ *    sam znajdzie arkusz). Wklej zawartość tego pliku jako Code.gs.
+ *
+ *    Jeśli zamiast tego stworzyłeś projekt na script.google.com (standalone),
+ *    setupApprovalColumns rzuci `Cannot read properties of null (reading
+ *    'getSheets')` — wtedy wpisz ID arkusza w CONFIG.SPREADSHEET_ID poniżej
+ *    (ID weź z URL arkusza: …/spreadsheets/d/<ID>/edit).
  *
  * 4. Ustaw strefę czasową projektu na Europe/Warsaw:
  *    Apps Script → ⚙ Settings → "Time zone" → Warsaw.
@@ -106,6 +112,13 @@ const CONFIG = {
   // Adres, na który leci powiadomienie o nowym zgłoszeniu.
   ADMIN_EMAIL: 'YOUR_EMAIL@example.com',
 
+  // ID arkusza z odpowiedziami formularza. Wymagane gdy projekt Apps Script jest
+  // STANDALONE (utworzony z script.google.com); dla projektu container-bound
+  // (otwartego przez Rozszerzenia → Apps Script wewnątrz arkusza) można zostawić
+  // pusty string — wtedy skrypt sięgnie po aktywny arkusz automatycznie.
+  // ID weź z URL arkusza: https://docs.google.com/spreadsheets/d/<ID-TUTAJ>/edit
+  SPREADSHEET_ID: '',
+
   // Strefa czasowa wyświetlana w mailach. Powinna pasować do strefy projektu.
   TIMEZONE: 'Europe/Warsaw',
 
@@ -143,7 +156,11 @@ const STATUS = {
 // ============================================================================
 
 function setupApprovalColumns() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const ss = getSpreadsheet_();
+  if (!ss) {
+    throw new Error('Nie znaleziono arkusza. Otwórz skrypt przez "Rozszerzenia → Apps Script" wewnątrz arkusza, albo wpisz ID arkusza w CONFIG.SPREADSHEET_ID.');
+  }
+  const sheet = ss.getSheets()[0];
   const lastCol = sheet.getLastColumn();
   const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
 
@@ -164,7 +181,7 @@ function setupApprovalColumns() {
     sheet.getRange(2, statusColIdx, Math.max(sheet.getMaxRows() - 1, 1)).setDataValidation(rule);
   }
 
-  SpreadsheetApp.getActiveSpreadsheet().toast('Kolumny gotowe. Dodaj triggery (instrukcja w pliku).', 'Setup OK', 6);
+  ss.toast('Kolumny gotowe. Dodaj triggery (instrukcja w pliku).', 'Setup OK', 6);
 }
 
 // ============================================================================
@@ -376,7 +393,7 @@ function notifyAdmin_(sheet, row, headers) {
     'Opis:',
     String(data[COL.DESC] || '(brak)'),
     '',
-    `Arkusz: ${SpreadsheetApp.getActiveSpreadsheet().getUrl()}`,
+    `Arkusz: ${sheet.getParent().getUrl()}`,
     '',
     'Jeśli zgłaszający podał tylko link — otwórz go i uzupełnij datę,',
     'godzinę oraz miejsce w arkuszu PRZED zmianą statusu na "Approved".',
@@ -392,4 +409,12 @@ function notifyAdmin_(sheet, row, headers) {
 
 function formatNow_() {
   return Utilities.formatDate(new Date(), CONFIG.TIMEZONE, 'yyyy-MM-dd HH:mm');
+}
+
+function getSpreadsheet_() {
+  if (CONFIG.SPREADSHEET_ID) {
+    try { return SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID); }
+    catch (e) { /* spróbujemy aktywnego poniżej */ }
+  }
+  return SpreadsheetApp.getActiveSpreadsheet();
 }
