@@ -326,15 +326,29 @@ button.section-toggle {
 }
 .section-toggle-label { flex: 0 0 auto; }
 .section-toggle::after { order: 1; }
+.section-toggle-action {
+  order: 2; flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px 5px 12px;
+  border: 1px solid rgba(var(--primary-rgb), .35);
+  border-radius: 999px;
+  font-size: .58rem; letter-spacing: .14em; line-height: 1;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+.section-toggle-action-text::before { content: "Zwiń"; }
+.section-toggle[aria-expanded="false"] .section-toggle-action-text::before { content: "Rozwiń"; }
 .section-toggle-chevron {
-  order: 2; flex-shrink: 0; color: var(--amber);
+  flex-shrink: 0; color: currentColor;
   transition: transform .25s ease;
 }
 .section-toggle[aria-expanded="false"] .section-toggle-chevron {
   transform: rotate(-90deg);
 }
 .section-toggle:hover { color: var(--straw); }
-.section-toggle:hover .section-toggle-chevron { color: var(--straw); }
+.section-toggle:hover .section-toggle-action {
+  background: rgba(var(--primary-rgb), .14);
+  border-color: rgba(var(--primary-rgb), .65);
+}
 .section-toggle:focus-visible {
   outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 2px;
 }
