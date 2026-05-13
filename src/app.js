@@ -1,10 +1,8 @@
 // ════════════════════════════════════════════════
 // CONFIG
 // ════════════════════════════════════════════════
-const ICS_URLS = [
-  'https://calendar.google.com/calendar/ical/459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com/public/basic.ics',
-];
-const PROXY = 'https://corsproxy.io/?';
+const ICS_FEED = 'https://calendar.google.com/calendar/ical/459c7aba9bb06fb9ebe829ce0ec57e20d9b01efd6b3e5c586a981f97f1707bb8%40group.calendar.google.com/public/basic.ics';
+const ICS_PROXY = '/api/ics';
 const TZ_DISPLAY = 'Europe/Warsaw';
 
 // Google Form for submitting events. Replace these with your form URLs after creating it
@@ -233,14 +231,10 @@ async function loadEvents() {
   const max  = new Date(now.getTime() + 90 * 24 * 3600 * 1000);
 
   try {
-    const texts = await Promise.all(
-      ICS_URLS.map(url =>
-        fetch(PROXY + encodeURIComponent(url))
-          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); })
-      )
-    );
-
-    const raw  = texts.flatMap(parseIcs);
+    const r = await fetch(ICS_PROXY);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const text = await r.text();
+    const raw = parseIcs(text);
     const seen = new Set();
     ALL_EVENTS = raw
       .filter(ev => ev.start >= now && ev.start <= max)
@@ -364,11 +358,9 @@ function downloadEventIcs() {
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
-const ICS_FEED = ICS_URLS[0];
-
 function openImportModal() {
   document.getElementById('gcal-sub-link').href  = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(ICS_FEED)}`;
-  document.getElementById('ics-dl-link').href    = PROXY + encodeURIComponent(ICS_FEED);
+  document.getElementById('ics-dl-link').href    = ICS_PROXY;
   document.getElementById('ics-url-text').textContent = ICS_FEED;
   document.getElementById('import-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
