@@ -3,5 +3,10 @@
   "buildCommand": "npm run lint",
   "outputDirectory": "src",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "git": {
+    "deploymentEnabled": {
+      "master": false
+    }
+  }
 }
