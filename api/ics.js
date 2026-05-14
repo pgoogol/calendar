@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     }
     const text = await upstream.text();
     res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+    res.setHeader('Cache-Control', 'no-store');
     res.status(200).send(text);
   } catch (err) {
     res.status(502).send(`Fetch failed: ${err.message}`);
