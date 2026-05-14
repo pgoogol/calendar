@@ -231,9 +231,27 @@ async function loadEvents() {
   const max  = new Date(now.getTime() + 90 * 24 * 3600 * 1000);
 
   try {
-    const r = await fetch(ICS_PROXY);
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const text = await r.text();
+    const storedEtag = sessionStorage.getItem('ics_etag');
+    const storedText = sessionStorage.getItem('ics_text');
+    const headers = storedEtag ? { 'If-None-Match': storedEtag } : {};
+
+    const r = await fetch(ICS_PROXY, { cache: 'no-store', headers });
+    if (!r.ok && r.status !== 304) throw new Error(`HTTP ${r.status}`);
+
+    let text;
+    if (r.status === 304 && storedText) {
+      text = storedText;
+    } else {
+      text = await r.text();
+      const etag = r.headers.get('etag');
+      if (etag) {
+        try {
+          sessionStorage.setItem('ics_etag', etag);
+          sessionStorage.setItem('ics_text', text);
+        } catch (_) {}
+      }
+    }
+
     const raw = parseIcs(text);
     const seen = new Set();
     ALL_EVENTS = raw
