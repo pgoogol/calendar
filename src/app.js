@@ -12,6 +12,11 @@ const TZ_DISPLAY = 'Europe/Warsaw';
 const FORM_URL       = 'https://forms.gle/iSA5wcozKqmcD5Ad6';
 const FORM_EMBED_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe5CHOQV2CyM7GCbEqlV-jFASByplZKIX1JdN6al5jkG1avUw/viewform?embedded=true';
 
+function escapeHTML(str) {
+  return (str || '').replace(/[&<>"']/g, ch =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
 function normalisePL(str) {
   return (str || '').toLowerCase()
     .replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e')
@@ -210,10 +215,10 @@ function makeCard(ev) {
       <div class="card-dot"></div>
     </div>
     <div class="card-body">
-      <div class="card-title">${ev.summary || 'Bez nazwy'}</div>
-      ${location ? `<div class="card-location">${pinSvg}${location}</div>` : ''}
+      <div class="card-title">${escapeHTML(ev.summary) || 'Bez nazwy'}</div>
+      ${location ? `<div class="card-location">${pinSvg}${escapeHTML(location)}</div>` : ''}
       <div class="card-badges">
-        ${city ? `<span class="card-city-chip">${city}</span>` : ''}
+        ${city ? `<span class="card-city-chip">${escapeHTML(city)}</span>` : ''}
         ${badgesHTML(types)}
       </div>
     </div>`;
@@ -237,7 +242,7 @@ async function loadEvents() {
     const raw = parseIcs(text);
     const seen = new Set();
     ALL_EVENTS = raw
-      .filter(ev => ev.start >= now && ev.start <= max)
+      .filter(ev => (ev.end || ev.start) >= now && ev.start <= max)
       .sort((a,b) => a.start - b.start)
       .filter(ev => {
         const key = ev.uid || (ev.summary + ev.start.toISOString());
@@ -291,6 +296,24 @@ document.querySelectorAll('#cat-pills .pill').forEach(btn => {
 });
 
 let currentEvent = null;
+let lastFocused  = null;
+
+function openOverlay(id) {
+  const overlay = document.getElementById(id);
+  lastFocused = document.activeElement;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const dialog = overlay.querySelector('[role="dialog"]');
+  if (dialog) dialog.focus();
+}
+function closeOverlay(id) {
+  const overlay = document.getElementById(id);
+  if (!overlay.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  if (lastFocused && document.contains(lastFocused)) lastFocused.focus();
+  lastFocused = null;
+}
 
 function openEventModal(ev, types, city) {
   currentEvent = ev;
@@ -311,13 +334,11 @@ function openEventModal(ev, types, city) {
   else         { descEl.style.display = 'none'; }
   document.getElementById('m-gcal-link').href = buildGcalLink(ev);
   modal.querySelector('.modal-body').scrollTop = 0;
-  document.getElementById('event-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  openOverlay('event-overlay');
 }
 
 function closeEventModal() {
-  document.getElementById('event-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+  closeOverlay('event-overlay');
 }
 function handleOverlayClick(e) {
   if (e.target === document.getElementById('event-overlay')) closeEventModal();
@@ -339,6 +360,10 @@ function fmtIcsDate(d, allDay) {
   if (allDay) return d.toISOString().slice(0,10).replace(/-/g,'');
   return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
 }
+function escapeIcs(s) {
+  return (s || '').replace(/\\/g,'\\\\').replace(/;/g,'\\;')
+                  .replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+}
 function downloadEventIcs() {
   const ev = currentEvent;
   if (!ev) return;
@@ -347,9 +372,10 @@ function downloadEventIcs() {
   const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Sabor Latino//PL',
     'BEGIN:VEVENT',
     `UID:${ev.uid || Date.now()+'@sabor-latino'}`,
-    `SUMMARY:${ev.summary||''}`, dtStart, dtEnd,
-    ev.location ? `LOCATION:${ev.location}` : '',
-    ev.desc ? `DESCRIPTION:${ev.desc.replace(/\n/g,'\\n')}` : '',
+    `DTSTAMP:${fmtIcsDate(new Date(),false)}`,
+    `SUMMARY:${escapeIcs(ev.summary)}`, dtStart, dtEnd,
+    ev.location ? `LOCATION:${escapeIcs(ev.location)}` : '',
+    ev.desc ? `DESCRIPTION:${escapeIcs(ev.desc)}` : '',
     'END:VEVENT','END:VCALENDAR',
   ].filter(Boolean).join('\r\n');
   const url = URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
@@ -362,12 +388,10 @@ function openImportModal() {
   document.getElementById('gcal-sub-link').href  = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(ICS_FEED)}`;
   document.getElementById('ics-dl-link').href    = ICS_PROXY;
   document.getElementById('ics-url-text').textContent = ICS_FEED;
-  document.getElementById('import-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  openOverlay('import-overlay');
 }
 function closeImportModal() {
-  document.getElementById('import-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+  closeOverlay('import-overlay');
 }
 function handleImportOverlayClick(e) {
   if (e.target === document.getElementById('import-overlay')) closeImportModal();
@@ -387,12 +411,10 @@ function openSubmitModal() {
     frame.dataset.loaded = '1';
   }
   document.getElementById('submit-external-link').href = FORM_URL;
-  document.getElementById('submit-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  openOverlay('submit-overlay');
 }
 function closeSubmitModal() {
-  document.getElementById('submit-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+  closeOverlay('submit-overlay');
 }
 function handleSubmitOverlayClick(e) {
   if (e.target === document.getElementById('submit-overlay')) closeSubmitModal();
@@ -400,6 +422,22 @@ function handleSubmitOverlayClick(e) {
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeEventModal(); closeImportModal(); closeSubmitModal(); }
+  if (e.key === 'Tab') {
+    const overlay = document.querySelector('.modal-overlay.open');
+    if (!overlay) return;
+    const focusables = [...overlay.querySelectorAll(
+      'a[href], button:not([disabled]), select, input, textarea, iframe'
+    )].filter(el => el.offsetParent !== null);
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last  = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey && (active === first || !overlay.contains(active))) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && (active === last || !overlay.contains(active))) {
+      e.preventDefault(); first.focus();
+    }
+  }
 });
 
 // ════════════════════════════════════════════════
@@ -427,6 +465,15 @@ document.addEventListener('keydown', e => {
 // ════════════════════════════════════════════════
 // THEME TOGGLE
 // ════════════════════════════════════════════════
+function syncCalendarTheme() {
+  const frame = document.getElementById('gcal-frame');
+  if (!frame) return;
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const bg  = isLight ? '%23fbf5e3' : '%23171f3d';
+  const src = frame.getAttribute('src').replace(/bgcolor=%23[0-9a-fA-F]{6}/, `bgcolor=${bg}`);
+  if (src !== frame.getAttribute('src')) frame.src = src;
+}
+
 (function setupThemeToggle() {
   const btn = document.getElementById('theme-toggle');
   if (!btn) return;
@@ -436,11 +483,13 @@ document.addEventListener('keydown', e => {
     btn.setAttribute('aria-label', isLight ? 'Przełącz na motyw ciemny' : 'Przełącz na motyw jasny');
   };
   syncAria();
+  syncCalendarTheme();
   btn.addEventListener('click', () => {
     const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) {}
     syncAria();
+    syncCalendarTheme();
   });
 })();
 

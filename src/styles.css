@@ -513,6 +513,9 @@ footer {
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 
+/* Kontenery dialogów dostają programowy fokus (tabindex="-1") — bez obrysu */
+.modal:focus, .import-modal:focus, .submit-modal:focus { outline: none; }
+
 .modal-close {
   position: absolute; top: 14px; right: 14px;
   width: 30px; height: 30px; border-radius: 1px;

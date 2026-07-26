@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sabor Latino — Salsa & Bachata Białystok</title>
+  <meta name="description" content="Kalendarz wydarzeń salsy i bachaty w Białymstoku i okolicach — potańcówki, warsztaty, festiwale. Aktualizowany na bieżąco przez społeczność." />
+  <meta property="og:title" content="Sabor Latino — Salsa & Bachata Białystok" />
+  <meta property="og:description" content="Kalendarz wydarzeń salsy i bachaty w Białymstoku i okolicach — potańcówki, warsztaty, festiwale. Aktualizowany na bieżąco przez społeczność." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pl_PL" />
+  <meta property="og:site_name" content="Sabor Latino" />
+  <meta name="theme-color" content="#0c1226" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%83%3C/text%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="theme-bootstrap.js"></script>
   <link rel="stylesheet" href="styles.css" />
@@ -95,7 +103,7 @@
       <div class="live-badge"><span class="live-dot"></span> Aktualizowany na bieżąco</div>
     </div>
     <div class="calendar-frame">
-      <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FWarsaw&showPrint=0&showCalendars=0&showTabs=0&showTitle=0&src=NDU5YzdhYmE5YmIwNmZiOWViZTgyOWNlMGVjNTdlMjBkOWIwMWVmZDZiM2U1YzU4NmE5ODFmOTdmMTcwN2JiOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23e63946&bgcolor=%23fbf5e3" style="border-width:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>    </div>
+      <iframe id="gcal-frame" title="Pełny kalendarz wydarzeń" src="https://calendar.google.com/calendar/embed?height=600&wkst=2&ctz=Europe%2FWarsaw&showPrint=0&showCalendars=0&showTabs=0&showTitle=0&src=NDU5YzdhYmE5YmIwNmZiOWViZTgyOWNlMGVjNTdlMjBkOWIwMWVmZDZiM2U1YzU4NmE5ODFmOTdmMTcwN2JiOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23e63946&bgcolor=%23fbf5e3" style="border-width:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>    </div>
     <p class="cal-note">Brakuje eventu? <a href="#" onclick="openSubmitModal(); return false;">Zgłoś go przez formularz</a> – po zatwierdzeniu trafi do kalendarza.</p>
   </div>
 
@@ -107,9 +115,9 @@
        EVENT DETAIL MODAL
   ══════════════════════════════ -->
   <div class="modal-overlay" id="event-overlay" onclick="handleOverlayClick(event)">
-    <div class="modal" id="event-modal" data-primary="salsa">
+    <div class="modal" id="event-modal" data-primary="salsa" role="dialog" aria-modal="true" aria-labelledby="m-title" tabindex="-1">
       <div class="modal-accent"></div>
-      <button class="modal-close" onclick="closeEventModal()">✕</button>
+      <button class="modal-close" onclick="closeEventModal()" aria-label="Zamknij">✕</button>
       <div class="modal-body">
         <div class="modal-badges" id="m-badges"></div>
         <div class="modal-title" id="m-title"></div>
@@ -151,11 +159,11 @@
        IMPORT CALENDAR MODAL
   ══════════════════════════════ -->
   <div class="modal-overlay" id="import-overlay" onclick="handleImportOverlayClick(event)">
-    <div class="import-modal">
+    <div class="import-modal" role="dialog" aria-modal="true" aria-labelledby="import-title" tabindex="-1">
       <div class="import-accent"></div>
-      <button class="modal-close" onclick="closeImportModal()">✕</button>
+      <button class="modal-close" onclick="closeImportModal()" aria-label="Zamknij">✕</button>
       <div class="import-body">
-        <div class="import-title">Dodaj do kalendarza</div>
+        <div class="import-title" id="import-title">Dodaj do kalendarza</div>
         <div class="import-sub">Subskrybuj, żeby automatycznie widzieć nowe eventy</div>
         <div class="import-options">
           <a class="import-option" id="gcal-sub-link" href="#" target="_blank" rel="noopener">
@@ -186,11 +194,11 @@
        SUBMIT EVENT MODAL
   ══════════════════════════════ -->
   <div class="modal-overlay" id="submit-overlay" onclick="handleSubmitOverlayClick(event)">
-    <div class="submit-modal">
+    <div class="submit-modal" role="dialog" aria-modal="true" aria-labelledby="submit-title" tabindex="-1">
       <div class="submit-accent"></div>
-      <button class="modal-close" onclick="closeSubmitModal()">✕</button>
+      <button class="modal-close" onclick="closeSubmitModal()" aria-label="Zamknij">✕</button>
       <div class="submit-header">
-        <div class="submit-title">Zgłoś wydarzenie</div>
+        <div class="submit-title" id="submit-title">Zgłoś wydarzenie</div>
         <div class="submit-sub">Wypełnij formularz albo wklej link do wydarzenia z Facebooka – po zatwierdzeniu trafi do kalendarza (zwykle do 24h).</div>
       </div>
       <div class="submit-frame-wrap">
